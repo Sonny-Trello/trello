@@ -35,7 +35,7 @@
 
 <div>
 <details>
-
+<-- 여기에 내용 추가 -->
 </details>
 </div>
 
