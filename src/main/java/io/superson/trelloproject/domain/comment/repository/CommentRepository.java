@@ -7,4 +7,5 @@ public interface CommentRepository {
 
     Comment save(User user, Comment comment);
 
+    Comment findCommentOrElseThrow(Long commentId);
 }

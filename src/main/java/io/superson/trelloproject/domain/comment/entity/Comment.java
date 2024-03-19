@@ -1,5 +1,6 @@
 package io.superson.trelloproject.domain.comment.entity;
 
+import io.superson.trelloproject.domain.comment.dto.CommentRequestDto;
 import io.superson.trelloproject.domain.common.entity.Timestamped;
 import io.superson.trelloproject.domain.ticket.entity.Ticket;
 import io.superson.trelloproject.domain.user.entity.User;
@@ -32,5 +33,9 @@ public class Comment extends Timestamped {
         this.content = content;
         this.user = user;
 //        this.ticket = ticket;
+    }
+
+    public void updateComment(CommentRequestDto commentRequestDto) {
+        this.content = commentRequestDto.getContent();
     }
 }

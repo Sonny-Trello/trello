@@ -27,10 +27,17 @@ public class CommentService {
         commentRepository.save(user, comment);
     }
 
+    public void updateComment(User user, Long boardId, Long ticketId, Long commentId, CommentRequestDto commentRequestDto) {
+        validateUserIsBoardMember(user, boardId);
+        Comment comment = commentRepository.findCommentOrElseThrow(commentId);
+        comment.updateComment(commentRequestDto);
+    }
+
     private void validateUserIsBoardMember(User user, Long boardId) {
         List<User> userList = boardQueryRepository.findAllByBoardId(boardId);
         if (userList.stream().noneMatch(u -> u.getUserId().equals(user.getUserId()))) {
             throw new UserPermissionException("수정 권한이 없습니다.");
         }
     }
+
 }

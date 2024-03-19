@@ -28,6 +28,15 @@ public class CommentController {
                 .body(ResponseDto.<Void>builder().build());
     }
 
+    @PutMapping("/{commentId}")
+    public ResponseEntity<ResponseDto<Void>> updateComment(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long boardId,
+                                                           @PathVariable Long ticketId, @PathVariable Long commentId,
+                                                           @RequestBody @Validated CommentRequestDto commentRequestDto) {
+        commentService.updateComment(userDetails.getUser(), boardId, ticketId, commentId, commentRequestDto);
+        return ResponseEntity.created(createUri(boardId))
+                .body(ResponseDto.<Void>builder().build());
+    }
+
     private URI createUri(Long boardId) {
         return ServletUriComponentsBuilder.fromCurrentRequestUri()
                 .replacePath("/v1/boards/{boardId}")
