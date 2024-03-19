@@ -15,11 +15,6 @@ public class BoardRepositoryImpl implements BoardRepository{
     }
 
     @Override
-    public void delete(Board board) {
-        boardJpaRepository.delete(board);
-    }
-
-    @Override
     public Board findById(Long id) {
         return boardJpaRepository.findById(id).orElseThrow(
             () -> new IllegalArgumentException("해당하는 보드가 없습니다."));
@@ -29,6 +24,5 @@ public class BoardRepositoryImpl implements BoardRepository{
     public void deleteById(Long id) {
         boardJpaRepository.deleteById(id);
     }
-
 
 }

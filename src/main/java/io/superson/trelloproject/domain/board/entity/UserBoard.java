@@ -18,7 +18,6 @@ import lombok.NoArgsConstructor;
 @Getter
 @Table(name = "tb_user_board")
 @NoArgsConstructor
-@AllArgsConstructor
 public class UserBoard {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

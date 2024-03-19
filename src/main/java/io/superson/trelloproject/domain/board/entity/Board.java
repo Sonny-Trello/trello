@@ -34,8 +34,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Getter
 @Table(name = "TB_BOARD")
 @NoArgsConstructor
-@AllArgsConstructor
-@EntityListeners(AuditingEntityListener.class)
 
 @SQLDelete(sql = "update TB_BOARD set deleted_at = NOW() where board_id = ?")
 @SQLRestriction(value = "deleted_at is NULL")
