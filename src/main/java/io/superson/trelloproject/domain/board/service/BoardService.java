@@ -20,12 +20,12 @@ public class BoardService {
         return new BoardResponseDto(board);
     }
 
-//    public BoardResponseDto updateBoard(Long id, BoardRequestDto requestDto) {
-//        Board board = boardRepository.findById(id);
-//        board.update(requestDto);
-//
-//        return new BoardResponseDto(board);
-//    }
+    public BoardResponseDto updateBoard(Long id, BoardRequestDto requestDto) {
+        Board board = boardRepository.findById(id);
+        board.update(requestDto);
+
+        return new BoardResponseDto(board);
+    }
 //
 //    public void deleteBoard(Long id) {
 //        boardRepository.findById(id);

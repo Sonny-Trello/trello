@@ -36,18 +36,18 @@ public class BoardController {
                 .build());
     }
 
-//    @PutMapping("boards/{id}")
-//    public ResponseEntity<ResponseDto<BoardResponseDto>> updateBoard(
-//        @PathVariable Long id,
-//        @RequestBody @Valid BoardRequestDto requestDto
-//    ) {
-//        BoardResponseDto responseDto = boardService.updateBoard(id, requestDto);
-//
-//        return ResponseEntity.created(createUri(responseDto.getBoardId()))
-//            .body(ResponseDto.<BoardResponseDto>builder()
-//                .data(responseDto)
-//                .build());
-//    }
+    @PutMapping("boards/{id}")
+    public ResponseEntity<ResponseDto<BoardResponseDto>> updateBoard(
+        @PathVariable Long id,
+        @RequestBody @Valid BoardRequestDto requestDto
+    ) {
+        BoardResponseDto responseDto = boardService.updateBoard(id, requestDto);
+
+        return ResponseEntity.created(createUri(responseDto.getBoardId()))
+            .body(ResponseDto.<BoardResponseDto>builder()
+                .data(responseDto)
+                .build());
+    }
 //
 //    @PatchMapping("boards/{id}")
 //    public ResponseEntity<ResponseDto<BoardResponseDto>> deleteBoard(
