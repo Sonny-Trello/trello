@@ -20,11 +20,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     User user = new User();
     //info 에서 정보를 추출하여 User 생성
     user.setUserId(info.get("userId", String.class));
-//    if (info.get("role", String.class).equals("USER")) {
-//      user.setRole(UserRoleEnum.USER);
-//    } else {
-//      user.setRole(UserRoleEnum.ADMIN);
-//    }
     user.setEmail(info.getSubject());
 
     return new UserDetailsImpl(user);

@@ -40,22 +40,16 @@ public class AuthorizationFilter extends
 
     if (Objects.nonNull(token)) { // 만약 토큰이 있으면
       if (jwtUtil.validateToken(token)) {
-        // 토큰에서 유저정보를 받아와서 info에 넣음
         Claims info = jwtUtil.getUserInfoFromToken(token); //token 에서 info 추출
         SecurityContext context = SecurityContextHolder.createEmptyContext();
         UserDetails userDetails = userDetailsServiceImpl.getUserDetails(
-            info); // UserRepository 조회하지 않고 해결
-        //userDetails 에 유저의 상세 정보를 넣음
+            info);
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails,
             null, userDetails.getAuthorities());
-        //인증 확인을 하여 아직 인증이 완료되었다는 정보를 보냄
-
         context.setAuthentication(authentication);
-        // 해당 인증정보를 ContextHolder 에 저장
-
         SecurityContextHolder.setContext(context);
-        // 여기까지 하면 @AuthenticationPrincipal 로 해당 내용들을 조회할 수 있음
+        // @AuthenticationPrincipal 로 유저정보 조회 가능
       } else {
         // 인증정보가  존재하지 않을때
         ExceptionDto statusResponseDto = ExceptionDto.builder()

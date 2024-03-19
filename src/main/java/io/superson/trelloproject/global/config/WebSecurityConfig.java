@@ -23,20 +23,15 @@ public class WebSecurityConfig {
   private final ObjectMapper objectMapper;
   private final UserDetailsServiceImpl userDetailsServiceImpl;
 
-
-  //  Filter 한바퀴 돌림
   @Bean
   public AuthorizationFilter authorizationFilter() {
     return new AuthorizationFilter(jwtUtil, objectMapper, userDetailsServiceImpl);
   }
 
-
   @Bean
   public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
   }
-  // PasswordEncoder 중에 BCryptPasswordEncoder 사용
-
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity)
@@ -52,8 +47,8 @@ public class WebSecurityConfig {
     httpSecurity.authorizeHttpRequests((authorizeHttpRequests) ->
         authorizeHttpRequests
             .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-            .requestMatchers("/users/login").permitAll() // permitAll() : 접근 허가
             .requestMatchers("/users/signup").permitAll()
+            .requestMatchers("/users/login").permitAll() // permitAll() : 접근 허가
             .anyRequest().authenticated() // authenticated() : jwt 인증 필요함
     );
 
