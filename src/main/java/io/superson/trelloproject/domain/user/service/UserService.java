@@ -2,6 +2,7 @@ package io.superson.trelloproject.domain.user.service;
 
 import io.superson.trelloproject.domain.user.dto.LoginRequestDto;
 import io.superson.trelloproject.domain.user.dto.SignUpRequestDto;
+import io.superson.trelloproject.domain.user.dto.UserResponseDto;
 import io.superson.trelloproject.domain.user.entity.User;
 import io.superson.trelloproject.domain.user.repository.command.UserRepository;
 import io.superson.trelloproject.global.jwt.JwtUtil;
@@ -41,4 +42,12 @@ public class UserService {
         String token = jwtUtil.createToken(foundUser);
         httpServletResponse.setHeader(jwtUtil.AUTHORIZATION_HEADER, token);
     }
+
+    public UserResponseDto getUserInfo(String userId) {
+        User foundUser = userRepository.findById(userId).orElseThrow(
+            () -> new IllegalArgumentException("존재하지 않는 유저입니다.")
+        );
+        return new UserResponseDto(foundUser);
+    }
+
 }
