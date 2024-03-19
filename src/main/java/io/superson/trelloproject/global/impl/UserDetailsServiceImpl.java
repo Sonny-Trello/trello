@@ -19,7 +19,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetails getUserDetails(Claims info) {
         User user = new User();
         //info 에서 정보를 추출하여 User 생성
-        user.setUserId(info.get("userId", String.class));
+        user.setUserId(info.getSubject());
 
         return new UserDetailsImpl(user);
     }
