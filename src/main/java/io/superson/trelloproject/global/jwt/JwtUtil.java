@@ -78,7 +78,6 @@ public class JwtUtil {
 
     Claims claims = Jwts.claims().setSubject(user.getEmail());
     claims.put("userId", user.getUserId());
-    claims.put("email", user.getEmail());
 
     return BEARER_PREFIX + Jwts.builder()
         .setExpiration(new Date(date.getTime() + TOKEN_TIME))
