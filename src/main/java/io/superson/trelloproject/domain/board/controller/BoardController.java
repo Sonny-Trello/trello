@@ -48,15 +48,15 @@ public class BoardController {
                 .data(responseDto)
                 .build());
     }
-//
-//    @PatchMapping("boards/{id}")
-//    public ResponseEntity<ResponseDto<BoardResponseDto>> deleteBoard(
-//        @PathVariable Long id
-//    ) {
-//        boardService.deleteBoard(id);
-//
-//        return ResponseEntity.noContent().build();
-//    }
+
+    @PatchMapping("boards/{id}")
+    public ResponseEntity<ResponseDto<BoardResponseDto>> deleteBoard(
+        @PathVariable Long id
+    ) {
+        boardService.deleteBoard(id);
+
+        return ResponseEntity.noContent().build();
+    }
 
     private URI createUri(Long todoId) {
         return ServletUriComponentsBuilder.fromCurrentRequest()

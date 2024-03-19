@@ -26,9 +26,9 @@ public class BoardService {
 
         return new BoardResponseDto(board);
     }
-//
-//    public void deleteBoard(Long id) {
-//        boardRepository.findById(id);
-//        boardRepository.deleteById(id);
-//    }
+
+    public void deleteBoard(Long id) {
+        boardRepository.findById(id);
+        boardRepository.deleteById(id);
+    }
 }
