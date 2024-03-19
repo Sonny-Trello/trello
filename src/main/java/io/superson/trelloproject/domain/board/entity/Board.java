@@ -32,10 +32,10 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
 @Getter
-@Table(name = "TB_BOARD")
+@Table(name = "tb_board")
 @NoArgsConstructor
 
-@SQLDelete(sql = "update TB_BOARD set deleted_at = NOW() where board_id = ?")
+@SQLDelete(sql = "update tb_board set deleted_at = NOW() where board_id = ?")
 @SQLRestriction(value = "deleted_at is NULL")
 public class Board extends Timestamped {
     @Id
