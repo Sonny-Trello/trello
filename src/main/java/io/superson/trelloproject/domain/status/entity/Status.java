@@ -26,12 +26,12 @@ public class Status extends Timestamped {
     private Board board;
 
     @Builder
-    public Status(String name, Board board){
+    public Status(String name, Board board) {
         this.name = name;
         this.board = board;
     }
 
-    public void updateStatus(StatusRequestDto statusRequestDto){
+    public void updateStatus(StatusRequestDto statusRequestDto) {
         this.name = statusRequestDto.getName();
     }
 }

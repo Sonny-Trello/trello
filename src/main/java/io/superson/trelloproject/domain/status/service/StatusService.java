@@ -9,6 +9,7 @@ import io.superson.trelloproject.domain.status.dto.UpdateStatusResponseDto;
 import io.superson.trelloproject.domain.status.entity.Status;
 import io.superson.trelloproject.domain.status.repository.StatusRepository;
 import io.superson.trelloproject.domain.user.entity.User;
+import io.superson.trelloproject.global.exception.UserPermissionException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -31,14 +32,14 @@ public class StatusService {
         Board board = boardRepository.findById(boardId);
         Status status = Status.builder().name(createStatusRequestDto.getName())
                 .board(board).build();
-        validateBoardId(status,boardId);
+        validateBoardId(status, boardId);
         return new CreateStatusResponseDto(statusRepository.save(user, status));
     }
 
     public UpdateStatusResponseDto updateStatus(User user, Long boardId, Long statusId, StatusRequestDto statusRequestDto) {
         Status status = statusRepository.findStatusOrElseThrow(statusId);
         validateUserIsBoardMember(user, boardId);
-        validateBoardId(status,boardId);
+        validateBoardId(status, boardId);
         status.updateStatus(statusRequestDto);
         return new UpdateStatusResponseDto(status);
     }
@@ -46,20 +47,20 @@ public class StatusService {
     public void deleteStatus(User user, Long boardId, Long statusId) {
         Status status = statusRepository.findStatusOrElseThrow(statusId);
         validateUserIsBoardMember(user, boardId);
-        validateBoardId(status,boardId);
+        validateBoardId(status, boardId);
         statusRepository.deleteById(statusId);
     }
 
     private void validateUserIsBoardMember(User user, Long boardId) {
         List<User> userList = boardQueryRepository.findAllByBoardId(boardId);
         if (userList.stream().noneMatch(u -> u.getUserId().equals(user.getUserId()))) {
-            throw new IllegalArgumentException("사용자가 보드의 멤버가 아닙니다.");
+            throw new UserPermissionException("수정 권한이 없습니다.");
         }
     }
 
-    private void validateBoardId(Status status, Long boardId){
+    private void validateBoardId(Status status, Long boardId) {
         if (!Objects.equals(status.getBoard().getBoardId(), boardId)) {
-            throw new NoSuchElementException("");
+            throw new NoSuchElementException("해당 티켓 상태가 존재하지 않습니다");
         }
     }
 }

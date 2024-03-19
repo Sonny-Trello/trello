@@ -1,12 +1,13 @@
 package io.superson.trelloproject.global.exception;
 
 import io.superson.trelloproject.domain.common.dto.ExceptionDto;
-import java.util.NoSuchElementException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.NoSuchElementException;
 
 @RestControllerAdvice
 public class ExceptionController {
@@ -23,14 +24,14 @@ public class ExceptionController {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ExceptionDto> handleMethodArgumentNotValidException(
-        MethodArgumentNotValidException e
+            MethodArgumentNotValidException e
     ) {
         return createResponse(HttpStatus.BAD_REQUEST, e.getBindingResult().getFieldError().getDefaultMessage());
     }
 
     private ResponseEntity<ExceptionDto> createResponse(HttpStatus status, String message) {
         return ResponseEntity.status(status.value())
-            .body(ExceptionDto.builder().status(status).message(message).build());
+                .body(ExceptionDto.builder().status(status).message(message).build());
     }
 
 }

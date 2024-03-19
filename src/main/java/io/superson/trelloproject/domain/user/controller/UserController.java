@@ -22,7 +22,7 @@ public class UserController {
 
     @PostMapping("/signup")
     public ResponseEntity<ResponseDto<Void>> signUp(
-        @RequestBody @Validated SignUpRequestDto requestDto) {
+            @RequestBody @Validated SignUpRequestDto requestDto) {
         userService.signUp(requestDto);
 
         return ResponseEntity.ok().build();
@@ -30,8 +30,8 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<ResponseDto<Void>> login(
-        @RequestBody @Validated LoginRequestDto requestDto,
-        HttpServletResponse httpServletResponse) {
+            @RequestBody @Validated LoginRequestDto requestDto,
+            HttpServletResponse httpServletResponse) {
         userService.login(requestDto, httpServletResponse);
 
         return ResponseEntity.ok().build();

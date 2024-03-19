@@ -19,42 +19,42 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class WebSecurityConfig {
 
-  private final JwtUtil jwtUtil;
-  private final ObjectMapper objectMapper;
-  private final UserDetailsServiceImpl userDetailsServiceImpl;
+    private final JwtUtil jwtUtil;
+    private final ObjectMapper objectMapper;
+    private final UserDetailsServiceImpl userDetailsServiceImpl;
 
-  @Bean
-  public AuthorizationFilter authorizationFilter() {
-    return new AuthorizationFilter(jwtUtil, objectMapper, userDetailsServiceImpl);
-  }
+    @Bean
+    public AuthorizationFilter authorizationFilter() {
+        return new AuthorizationFilter(jwtUtil, objectMapper, userDetailsServiceImpl);
+    }
 
-  @Bean
-  public PasswordEncoder passwordEncoder() {
-    return new BCryptPasswordEncoder();
-  }
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
-  @Bean
-  public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity)
-      throws Exception {
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity)
+            throws Exception {
 
-    //CSRF 설정하기
-    httpSecurity.csrf((csrf) -> csrf.disable());
+        //CSRF 설정하기
+        httpSecurity.csrf((csrf) -> csrf.disable());
 
-    httpSecurity.sessionManagement((sessionManagement) ->
-        sessionManagement.sessionCreationPolicy(
-            SessionCreationPolicy.STATELESS));
+        httpSecurity.sessionManagement((sessionManagement) ->
+                sessionManagement.sessionCreationPolicy(
+                        SessionCreationPolicy.STATELESS));
 
-    httpSecurity.authorizeHttpRequests((authorizeHttpRequests) ->
-        authorizeHttpRequests
-            .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-            .requestMatchers("/users/signup").permitAll()
-            .requestMatchers("/users/login").permitAll() // permitAll() : 접근 허가
-            .anyRequest().authenticated() // authenticated() : jwt 인증 필요함
-    );
+        httpSecurity.authorizeHttpRequests((authorizeHttpRequests) ->
+                authorizeHttpRequests
+                        .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+                        .requestMatchers("/users/signup").permitAll()
+                        .requestMatchers("/users/login").permitAll() // permitAll() : 접근 허가
+                        .anyRequest().authenticated() // authenticated() : jwt 인증 필요함
+        );
 
-    httpSecurity.addFilterBefore(authorizationFilter(),
-        UsernamePasswordAuthenticationFilter.class);
+        httpSecurity.addFilterBefore(authorizationFilter(),
+                UsernamePasswordAuthenticationFilter.class);
 
-    return httpSecurity.build();
-  }
+        return httpSecurity.build();
+    }
 }
