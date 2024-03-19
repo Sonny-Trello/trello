@@ -1,6 +1,7 @@
 package io.superson.trelloproject.domain.user.service;
 
 import io.superson.trelloproject.domain.user.dto.LoginRequestDto;
+import io.superson.trelloproject.domain.user.dto.PasswordUpdateRequestDto;
 import io.superson.trelloproject.domain.user.dto.SignUpRequestDto;
 import io.superson.trelloproject.domain.user.dto.UserResponseDto;
 import io.superson.trelloproject.domain.user.entity.User;
@@ -10,6 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -50,4 +52,23 @@ public class UserService {
         return new UserResponseDto(foundUser);
     }
 
+    @Transactional
+    public void passwordUpdate(PasswordUpdateRequestDto requestDto, User user) {
+        User foundUser = userRepository.findById(user.getUserId()).orElseThrow(
+            () -> new IllegalArgumentException("존재하지 않는 유저입니다.")
+        );
+
+        String presentPassword = requestDto.getPresentPassword();
+        if (!passwordEncoder.matches(presentPassword, foundUser.getPassword())) {
+            throw new IllegalArgumentException("입력하신 비밀번호가 잘못되었습니다.");
+        }
+
+        String newPassword = requestDto.getNewPassword();
+        String checkPassword = requestDto.getCheckPassword();
+        if (!newPassword.equals(checkPassword)) {
+            throw new IllegalArgumentException("새로운 비밀번호가 일치하지 않습니다.");
+        }
+
+        foundUser.setPassword(passwordEncoder.encode(newPassword));
+    }
 }
