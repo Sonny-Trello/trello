@@ -7,7 +7,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.validation.constraints.Email;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,18 +18,18 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @NoArgsConstructor
 public class User extends Timestamped {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.UUID)
-  String userId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    String userId;
 
-  @Column(name = "email", nullable = false)
-  @Email
-  String email;
-  @Column(name = "password", nullable = false)
-  String password;
+    @Column(name = "email", nullable = false, unique = true)
+    String email;
 
-  public User(SignUpRequestDto requestDto, PasswordEncoder passwordEncoder) {
-    this.email = requestDto.getEmail();
-    this.password = passwordEncoder.encode(requestDto.getPassword());
-  }
+    @Column(name = "password", nullable = false)
+    String password;
+
+    public User(SignUpRequestDto requestDto, PasswordEncoder passwordEncoder) {
+        this.email = requestDto.getEmail();
+        this.password = passwordEncoder.encode(requestDto.getPassword());
+    }
 }

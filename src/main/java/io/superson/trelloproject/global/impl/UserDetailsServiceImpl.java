@@ -13,20 +13,19 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-  private final UserRepository userRepository;
+    private final UserRepository userRepository;
 
-  // 이메일 값으로 유저 데이터 베이스에서 해당 값을 찾아와서 UserDetails 를 통해 세부 정보를 저장
-  public UserDetails getUserDetails(Claims info) {
-    User user = new User();
-    //info 에서 정보를 추출하여 User 생성
-    user.setUserId(info.get("userId", String.class));
-    user.setEmail(info.getSubject());
+    // 이메일 값으로 유저 데이터 베이스에서 해당 값을 찾아와서 UserDetails 를 통해 세부 정보를 저장
+    public UserDetails getUserDetails(Claims info) {
+        User user = new User();
+        //info 에서 정보를 추출하여 User 생성
+        user.setUserId(info.get("userId", String.class));
 
-    return new UserDetailsImpl(user);
-  }
+        return new UserDetailsImpl(user);
+    }
 
-  @Override
-  public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-    return null;
-  }
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return null;
+    }
 }
