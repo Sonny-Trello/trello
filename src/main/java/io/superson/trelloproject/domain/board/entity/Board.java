@@ -1,9 +1,10 @@
 package io.superson.trelloproject.domain.board.entity;
 
 import io.superson.trelloproject.domain.common.entity.Timestamped;
-import io.superson.trelloproject.domain.common.enumeration.Color;
 import jakarta.persistence.*;
 import lombok.Getter;
+
+import java.awt.*;
 
 @Entity
 @Getter
@@ -17,8 +18,8 @@ public class Board extends Timestamped {
     @Column(nullable = false)
     private String name;
 
-//    @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "ENUM('RED', 'GREEN', 'BLUE')")
+    //    @Enumerated(EnumType.STRING)
+    @Column
     private Color color;
 
     @Column(nullable = false)

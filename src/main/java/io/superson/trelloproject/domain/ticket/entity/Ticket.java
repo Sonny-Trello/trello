@@ -2,10 +2,10 @@ package io.superson.trelloproject.domain.ticket.entity;
 
 import io.superson.trelloproject.domain.board.entity.Board;
 import io.superson.trelloproject.domain.common.entity.Timestamped;
-import io.superson.trelloproject.domain.common.enumeration.Color;
 import io.superson.trelloproject.domain.status.entity.Status;
 import jakarta.persistence.*;
 
+import java.awt.*;
 import java.sql.Timestamp;
 
 @Entity
@@ -21,7 +21,7 @@ public class Ticket extends Timestamped {
 
     //    @Column(nullable = false)
 //    @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "ENUM('RED', 'GREEN', 'BLUE')")
+    @Column
     private Color color;
 
     @Column(nullable = false)
