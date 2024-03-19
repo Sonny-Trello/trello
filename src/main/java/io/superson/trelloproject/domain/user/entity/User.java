@@ -6,23 +6,23 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.sql.Timestamp;
-import java.util.UUID;
 
 @Entity
 @Getter
-//@Setter
+@Setter
+@Table(name = "tb_user")
 public class User extends Timestamped {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.UUID)
-  private UUID userId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String userId;
 
-  @Column(nullable = false, unique = true)
-  private String email;
+    @Column(nullable = false, unique = true)
+    private String email;
 
-  @Column(nullable = false)
-  private String password;
+    @Column(nullable = false)
+    private String password;
 
-  @Column
-  private Timestamp deletedAt;
+    @Column
+    private Timestamp deletedAt;
 }

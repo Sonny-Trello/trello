@@ -9,6 +9,7 @@ import jakarta.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
+@Table(name = "tb_ticket")
 public class Ticket extends Timestamped {
 
     @Id
@@ -18,8 +19,9 @@ public class Ticket extends Timestamped {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
+    //    @Column(nullable = false)
+//    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "ENUM('RED', 'GREEN', 'BLUE')")
     private Color color;
 
     @Column(nullable = false)

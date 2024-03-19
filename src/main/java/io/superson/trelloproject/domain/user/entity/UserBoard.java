@@ -6,6 +6,7 @@ import lombok.Getter;
 
 @Entity
 @Getter
+@Table(name = "tb_user_board")
 public class UserBoard {
 
     @Id

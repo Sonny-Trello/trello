@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
+@Table(name = "tb_status")
 public class Status extends Timestamped {
 
     @Id
@@ -19,9 +20,9 @@ public class Status extends Timestamped {
     @Column(nullable = false)
     private String name;
 
-    @ManyToOne
-    @JoinColumn(name = "board_id")
-    private Board board;
+//    @ManyToOne
+//    @JoinColumn(name = "board_id")
+//    private Board board;
 
     @Builder
     public Status(String name){

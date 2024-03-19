@@ -15,7 +15,7 @@ public class StatusService {
 
     private final StatusRepository statusRepository;
 
-    public CreateStatusResponseDto createStatus(Long boardId, Long statusId, CreateStatusRequestDto createStatusRequestDto) {
+    public CreateStatusResponseDto createStatus(CreateStatusRequestDto createStatusRequestDto) {
         Status status = Status.builder().name(createStatusRequestDto.getName()).build();
         return statusRepository.save(status);
     }

@@ -7,6 +7,7 @@ import lombok.Getter;
 
 @Entity
 @Getter
+@Table(name = "tb_board")
 public class Board extends Timestamped {
 
     @Id
@@ -16,8 +17,8 @@ public class Board extends Timestamped {
     @Column(nullable = false)
     private String name;
 
-    @Column
-    @Enumerated(EnumType.STRING)
+//    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "ENUM('RED', 'GREEN', 'BLUE')")
     private Color color;
 
     @Column(nullable = false)
