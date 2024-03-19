@@ -22,7 +22,12 @@ public class StatusService {
     }
 
     public void updateStatus(Long statusId, StatusRequestDto statusRequestDto) {
-        Status status = statusRepository.findById(statusId);
+        Status status = statusRepository.findStatusOrElseThrow(statusId);
         status.updateStatus(statusRequestDto);
+    }
+
+    public void deleteStatus(Long statusId) {
+        statusRepository.findStatusOrElseThrow(statusId);
+        statusRepository.deleteById(statusId);
     }
 }

@@ -34,4 +34,11 @@ public class StatusController {
         return ResponseEntity.status(HttpStatus.OK)
             .body(ResponseDto.<Void>builder().build());
     }
+
+    @DeleteMapping("/{statusId}")
+    public ResponseEntity<ResponseDto<Void>> deleteStatus(@PathVariable Long statusId){
+        statusService.deleteStatus(statusId);
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(ResponseDto.<Void>builder().build());
+    }
 }
