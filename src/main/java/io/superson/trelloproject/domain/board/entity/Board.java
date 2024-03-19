@@ -5,14 +5,18 @@ import io.superson.trelloproject.domain.board.dto.BoardRequestDto;
 import io.superson.trelloproject.domain.common.entity.Timestamped;
 import io.superson.trelloproject.domain.user.entity.User;
 import io.superson.trelloproject.global.util.Color;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
@@ -33,7 +37,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 
-@SQLDelete(sql = "update TB_BOARD set deleted_at = NOW() where id = ?")
+@SQLDelete(sql = "update TB_BOARD set deleted_at = NOW() where board_id = ?")
 @SQLRestriction(value = "deleted_at is NULL")
 public class Board extends Timestamped {
     @Id
@@ -53,15 +57,20 @@ public class Board extends Timestamped {
     @OneToMany(mappedBy = "board")
     private List<UserBoard> userBoard = new ArrayList<>();
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
     public Board(BoardRequestDto requestDto, User user) {
         this.name = requestDto.getName();
-        this.color = requestDto.getColor();
+        this.color = Color.valueOf(requestDto.getColor());
         this.description = requestDto.getDescription();
+        this.user = user;
     }
 
     public void update(BoardRequestDto requestDto) {
         this.name = requestDto.getName();
-        this.color = requestDto.getColor();
+        this.color = Color.valueOf(requestDto.getColor());
         this.description = requestDto.getDescription();
     }
 }
