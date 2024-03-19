@@ -3,9 +3,9 @@ package io.superson.trelloproject.domain.ticket.entity;
 import io.superson.trelloproject.domain.board.entity.Board;
 import io.superson.trelloproject.domain.common.entity.Timestamped;
 import io.superson.trelloproject.domain.status.entity.Status;
+import io.superson.trelloproject.global.util.Color;
 import jakarta.persistence.*;
 
-import java.awt.*;
 import java.time.LocalDateTime;
 
 @Entity

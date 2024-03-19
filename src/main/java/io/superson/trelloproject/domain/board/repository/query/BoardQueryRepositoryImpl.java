@@ -7,6 +7,8 @@ import static io.superson.trelloproject.domain.user.entity.QUser.user;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.superson.trelloproject.domain.board.entity.Board;
 import java.util.List;
+
+import io.superson.trelloproject.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -23,5 +25,14 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepository{
             .where(userBoard.user.userId.eq(userId))
             .orderBy(board.modifiedAt.desc())
             .fetch();
+    }
+
+    @Override
+    public List<User> findAllByBoardId(Long boardId) {
+        return jpaQueryFactory.select(user)
+                .from(user)
+                .join(userBoard).on(user.userId.eq(userBoard.user.userId))
+                .where(userBoard.board.boardId.eq(boardId))
+                .fetch();
     }
 }

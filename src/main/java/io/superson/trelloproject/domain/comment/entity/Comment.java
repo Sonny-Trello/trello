@@ -4,6 +4,7 @@ import io.superson.trelloproject.domain.common.entity.Timestamped;
 import io.superson.trelloproject.domain.ticket.entity.Ticket;
 import io.superson.trelloproject.domain.user.entity.User;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 
 @Entity
@@ -22,7 +23,14 @@ public class Comment extends Timestamped {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "ticket_id")
-    private Ticket ticket;
+//    @ManyToOne
+//    @JoinColumn(name = "ticket_id")
+//    private Ticket ticket;
+
+    @Builder
+    public Comment(String content, User user){
+        this.content = content;
+        this.user = user;
+//        this.ticket = ticket;
+    }
 }
