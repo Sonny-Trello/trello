@@ -11,4 +11,6 @@ public interface UserRepository {
     User save(User save);
 
     Optional<User> findById(String userId);
+
+    void deleteById(String userId);
 }

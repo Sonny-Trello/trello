@@ -26,5 +26,10 @@ public class UserRepositoryImpl implements UserRepository {
         return userJpaRepository.findById(userId);
     }
 
+    @Override
+    public void deleteById(String userId) {
+        userJpaRepository.deleteById(userId);
+    }
+
 
 }

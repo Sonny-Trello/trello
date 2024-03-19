@@ -75,4 +75,12 @@ public class UserService {
     public void logout(HttpServletResponse httpServletResponse) {
         httpServletResponse.setHeader(jwtUtil.AUTHORIZATION_HEADER, "");
     }
+
+    @Transactional
+    public void withdraw(String userId) {
+        userRepository.findById(userId).orElseThrow(
+            () -> new IllegalArgumentException("존재하지 않는 유저입니다.")
+        );
+        userRepository.deleteById(userId);
+    }
 }

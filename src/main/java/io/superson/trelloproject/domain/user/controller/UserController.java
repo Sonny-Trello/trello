@@ -67,5 +67,11 @@ public class UserController {
         userService.logout(httpServletResponse);
         return ResponseEntity.ok().build();
     }
-    
+
+    @PostMapping("/withdraw")
+    public ResponseEntity<ResponseDto<Void>> withdraw(
+        @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        userService.withdraw(userDetails.getUser().getUserId());
+        return ResponseEntity.ok().build();
+    }
 }
