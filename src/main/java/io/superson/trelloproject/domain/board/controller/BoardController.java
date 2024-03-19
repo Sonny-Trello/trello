@@ -7,9 +7,11 @@ import io.superson.trelloproject.domain.common.dto.ResponseDto;
 import io.superson.trelloproject.global.impl.UserDetailsImpl;
 import jakarta.validation.Valid;
 import java.net.URI;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -56,6 +58,17 @@ public class BoardController {
         boardService.deleteBoard(id);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("boards")
+    public ResponseEntity<ResponseDto<List<BoardResponseDto>>> getBoards(
+        @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        List<BoardResponseDto> responseDto = boardService.getBoards(userDetails.getUser());
+
+        return ResponseEntity.ok(ResponseDto.<List<BoardResponseDto>>builder()
+            .data(responseDto)
+            .build());
     }
 
     private URI createUri(Long todoId) {

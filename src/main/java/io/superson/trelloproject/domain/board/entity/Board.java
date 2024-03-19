@@ -13,9 +13,12 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -46,6 +49,9 @@ public class Board extends Timestamped {
 
     @Column(nullable = true)
     private LocalDateTime deletedAt;
+
+    @OneToMany(mappedBy = "board")
+    private List<UserBoard> userBoard = new ArrayList<>();
 
     public Board(BoardRequestDto requestDto, User user) {
         this.name = requestDto.getName();
