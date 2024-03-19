@@ -1,6 +1,7 @@
 package io.superson.trelloproject.domain.board.entity;
 
 import io.superson.trelloproject.domain.common.entity.Timestamped;
+import io.superson.trelloproject.domain.user.entity.User;
 import io.superson.trelloproject.global.util.Color;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -25,4 +26,7 @@ public class Board extends Timestamped {
     @Column(nullable = false)
     private String description;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 }

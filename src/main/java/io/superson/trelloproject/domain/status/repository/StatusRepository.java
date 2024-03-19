@@ -1,11 +1,12 @@
 package io.superson.trelloproject.domain.status.repository;
 
-import io.superson.trelloproject.domain.status.dto.CreateStatusResponseDto;
 import io.superson.trelloproject.domain.status.entity.Status;
+import io.superson.trelloproject.domain.user.entity.User;
 
 public interface StatusRepository {
 
-    CreateStatusResponseDto save(Status status);
+    void save(User user, Status status);
+
     Status findStatusOrElseThrow(Long statusId);
 
     void deleteById(Long statusId);

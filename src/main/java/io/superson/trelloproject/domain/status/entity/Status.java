@@ -21,14 +21,14 @@ public class Status extends Timestamped {
     @Column(nullable = false)
     private String name;
 
-//    @ManyToOne
-//    @JoinColumn(name = "board_id")
-//    private Board board;
+    @ManyToOne
+    @JoinColumn(name = "board_id")
+    private Board board;
 
     @Builder
-    public Status(String name){
+    public Status(String name, Board board){
         this.name = name;
-//        this.board = board;
+        this.board = board;
     }
 
     public void updateStatus(StatusRequestDto statusRequestDto){
