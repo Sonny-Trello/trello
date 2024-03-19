@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CreateStatusRequestDto {
+public class StatusRequestDto {
 
     @NotBlank(message = "이름을 입력해 주세요.")
     private String name;

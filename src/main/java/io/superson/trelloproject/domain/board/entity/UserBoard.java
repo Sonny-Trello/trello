@@ -1,6 +1,7 @@
-package io.superson.trelloproject.domain.user.entity;
+package io.superson.trelloproject.domain.board.entity;
 
 import io.superson.trelloproject.domain.board.entity.Board;
+import io.superson.trelloproject.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 

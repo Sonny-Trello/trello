@@ -2,6 +2,7 @@ package io.superson.trelloproject.domain.status.entity;
 
 import io.superson.trelloproject.domain.board.entity.Board;
 import io.superson.trelloproject.domain.common.entity.Timestamped;
+import io.superson.trelloproject.domain.status.dto.StatusRequestDto;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,5 +29,9 @@ public class Status extends Timestamped {
     public Status(String name){
         this.name = name;
 //        this.board = board;
+    }
+
+    public void updateStatus(StatusRequestDto statusRequestDto){
+        this.name = statusRequestDto.getName();
     }
 }
