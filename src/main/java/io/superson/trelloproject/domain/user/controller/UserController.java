@@ -60,4 +60,12 @@ public class UserController {
         userService.passwordUpdate(requestDto, userDetails.getUser());
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<ResponseDto<Void>> logout(
+        HttpServletResponse httpServletResponse) {
+        userService.logout(httpServletResponse);
+        return ResponseEntity.ok().build();
+    }
+    
 }

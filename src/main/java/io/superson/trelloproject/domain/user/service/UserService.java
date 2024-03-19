@@ -71,4 +71,8 @@ public class UserService {
 
         foundUser.setPassword(passwordEncoder.encode(newPassword));
     }
+
+    public void logout(HttpServletResponse httpServletResponse) {
+        httpServletResponse.setHeader(jwtUtil.AUTHORIZATION_HEADER, "");
+    }
 }

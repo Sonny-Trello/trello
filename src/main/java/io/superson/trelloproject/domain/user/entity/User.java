@@ -30,6 +30,7 @@ public class User extends Timestamped {
     @Column(name = "password", nullable = false)
     String password;
 
+    //TODO deletedAt; 추가
     public User(SignUpRequestDto requestDto, PasswordEncoder passwordEncoder) {
         this.email = requestDto.getEmail();
         this.password = passwordEncoder.encode(requestDto.getPassword());
