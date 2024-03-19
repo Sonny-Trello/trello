@@ -5,7 +5,7 @@ import io.superson.trelloproject.domain.user.entity.User;
 
 public interface StatusRepository {
 
-    void save(User user, Status status);
+    Status save(User user, Status status);
 
     Status findStatusOrElseThrow(Long statusId);
 
