@@ -12,14 +12,25 @@ public class UserRepositoryImpl implements UserRepository {
 
     private final UserJpaRepository userJpaRepository;
 
-    @Override
-    public Optional<User> findByEmail(String email) {
-        return userJpaRepository.findByEmail(email);
-    }
+  @Override
+  public Optional<User> findByEmail(String email) {
+    return userJpaRepository.findByEmail(email);
+  }
 
-    @Override
-    public User save(User save) {
-        return userJpaRepository.save(save);
-    }
+  @Override
+  public User save(User save) {
+    return userJpaRepository.save(save);
+  }
+
+  @Override
+  public Optional<User> findById(String userId) {
+    return userJpaRepository.findById(userId);
+  }
+
+  @Override
+  public void deleteById(String userId) {
+    userJpaRepository.deleteById(userId);
+  }
+
 
 }
