@@ -1,4 +1,4 @@
-package io.superson.trelloproject.domain.status.repository;
+package io.superson.trelloproject.domain.status.repository.command;
 
 import io.superson.trelloproject.domain.status.entity.Status;
 import io.superson.trelloproject.domain.user.entity.User;
@@ -27,4 +27,5 @@ public class StatusRepositoryImpl implements StatusRepository {
     public void deleteById(Long statusId) {
         statusJpaRepository.deleteById(statusId);
     }
+
 }
