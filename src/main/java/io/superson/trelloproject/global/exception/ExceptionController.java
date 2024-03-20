@@ -1,7 +1,6 @@
 package io.superson.trelloproject.global.exception;
 
 import io.superson.trelloproject.domain.common.dto.ExceptionDto;
-import io.superson.trelloproject.domain.user.exception.UserNotFoundException;
 import java.util.NoSuchElementException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
