@@ -6,7 +6,7 @@ import io.superson.trelloproject.domain.status.entity.Status;
 import io.superson.trelloproject.global.util.Color;
 import jakarta.persistence.*;
 
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 
 @Entity
 @Table(name = "tb_ticket")
@@ -27,7 +27,7 @@ public class Ticket extends Timestamped {
     private String description;
 
     @Column
-    private LocalDateTime deadline;
+    private Timestamp deadline;
 
     @ManyToOne
     @JoinColumn(name = "board_id")

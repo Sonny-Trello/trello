@@ -8,10 +8,11 @@ import io.superson.trelloproject.domain.board.repository.command.BoardRepository
 import io.superson.trelloproject.domain.board.repository.command.UserBoardRespository;
 import io.superson.trelloproject.domain.board.repository.query.BoardQueryRepository;
 import io.superson.trelloproject.domain.user.entity.User;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor

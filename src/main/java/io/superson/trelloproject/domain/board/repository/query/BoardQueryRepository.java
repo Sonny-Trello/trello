@@ -8,5 +8,6 @@ import java.util.List;
 public interface BoardQueryRepository {
 
     List<Board> findAllById(String userId);
+
     List<User> findAllByBoardId(Long boardId);
 }

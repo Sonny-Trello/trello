@@ -1,6 +1,7 @@
 package io.superson.trelloproject.domain.user.repository.command;
 
 import io.superson.trelloproject.domain.user.entity.User;
+
 import java.util.Optional;
 
 public interface UserRepository {
@@ -9,4 +10,8 @@ public interface UserRepository {
     Optional<User> findByEmail(String email);
 
     User save(User save);
+
+    Optional<User> findById(String userId);
+
+    void deleteById(String userId);
 }
