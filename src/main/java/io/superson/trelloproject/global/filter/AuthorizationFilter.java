@@ -9,8 +9,6 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,6 +17,9 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 public class AuthorizationFilter extends
@@ -32,8 +33,8 @@ public class AuthorizationFilter extends
     protected void doFilterInternal(
         HttpServletRequest httpServletRequest,
         HttpServletResponse httpServletResponse,
-        FilterChain filterChain)
-        throws ServletException, IOException {
+        FilterChain filterChain
+    ) throws ServletException, IOException {
 
         //토큰 받기
         String token = jwtUtil.resolveToken(httpServletRequest);
