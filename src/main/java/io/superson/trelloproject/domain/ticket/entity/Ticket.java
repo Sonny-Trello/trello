@@ -19,8 +19,6 @@ public class Ticket extends Timestamped {
     @Column(nullable = false)
     private String name;
 
-    //    @Column(nullable = false)
-//    @Enumerated(EnumType.STRING)
     @Column
     @Enumerated(EnumType.STRING)
     private Color color;

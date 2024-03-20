@@ -32,7 +32,7 @@ public class UserService {
     public void login(LoginRequestDto requestDto, HttpServletResponse httpServletResponse) {
         String email = requestDto.getEmail();
         User foundUser = userRepository.findByEmail(email).orElseThrow(
-                () -> new IllegalArgumentException("이메일과 비밀번호를 다시 확인해주세요.")
+            () -> new IllegalArgumentException("이메일과 비밀번호를 다시 확인해주세요.")
         );
         String password = requestDto.getPassword();
         if (!passwordEncoder.matches(password, foundUser.getPassword())) {

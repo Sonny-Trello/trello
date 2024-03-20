@@ -29,30 +29,37 @@ public class StatusService {
 
     public CreateStatusResponseDto createStatus(User user, Long boardId, StatusRequestDto createStatusRequestDto) {
         validateUserIsBoardMember(user, boardId);
+
         Board board = boardRepository.findById(boardId);
         Status status = Status.builder().name(createStatusRequestDto.getName())
-                .board(board).build();
+            .board(board).build();
+
         validateBoardId(status, boardId);
         return new CreateStatusResponseDto(statusRepository.save(user, status));
     }
 
     public UpdateStatusResponseDto updateStatus(User user, Long boardId, Long statusId, StatusRequestDto statusRequestDto) {
         Status status = statusRepository.findStatusOrElseThrow(statusId);
+
         validateUserIsBoardMember(user, boardId);
         validateBoardId(status, boardId);
+
         status.updateStatus(statusRequestDto);
         return new UpdateStatusResponseDto(status);
     }
 
     public void deleteStatus(User user, Long boardId, Long statusId) {
         Status status = statusRepository.findStatusOrElseThrow(statusId);
+
         validateUserIsBoardMember(user, boardId);
         validateBoardId(status, boardId);
+
         statusRepository.deleteById(statusId);
     }
 
     private void validateUserIsBoardMember(User user, Long boardId) {
         List<User> userList = boardQueryRepository.findAllByBoardId(boardId);
+
         if (userList.stream().noneMatch(u -> u.getUserId().equals(user.getUserId()))) {
             throw new UserPermissionException("수정 권한이 없습니다.");
         }

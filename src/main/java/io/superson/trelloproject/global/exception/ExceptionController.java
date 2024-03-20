@@ -24,14 +24,14 @@ public class ExceptionController {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ExceptionDto> handleMethodArgumentNotValidException(
-            MethodArgumentNotValidException e
+        MethodArgumentNotValidException e
     ) {
         return createResponse(HttpStatus.BAD_REQUEST, e.getBindingResult().getFieldError().getDefaultMessage());
     }
 
     private ResponseEntity<ExceptionDto> createResponse(HttpStatus status, String message) {
         return ResponseEntity.status(status.value())
-                .body(ExceptionDto.builder().status(status).message(message).build());
+            .body(ExceptionDto.builder().status(status).message(message).build());
     }
 
 }

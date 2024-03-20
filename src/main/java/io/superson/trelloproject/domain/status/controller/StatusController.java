@@ -25,35 +25,46 @@ public class StatusController {
     private final StatusService statusService;
 
     @PostMapping
-    public ResponseEntity<ResponseDto<CreateStatusResponseDto>> createStatus(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long boardId, @RequestBody @Validated StatusRequestDto statusRequestDto) {
+    public ResponseEntity<ResponseDto<CreateStatusResponseDto>> createStatus(
+        @AuthenticationPrincipal UserDetailsImpl userDetails,
+        @PathVariable Long boardId,
+        @RequestBody @Validated StatusRequestDto statusRequestDto
+    ) {
         CreateStatusResponseDto statusResponseDto = statusService.createStatus(userDetails.getUser(), boardId, statusRequestDto);
         return ResponseEntity.created(createUri(statusResponseDto.getStatusId()))
-                .body(ResponseDto.<CreateStatusResponseDto>builder()
-                        .data(statusResponseDto)
-                        .build());
+            .body(ResponseDto.<CreateStatusResponseDto>builder()
+                .data(statusResponseDto)
+                .build());
     }
 
     @PutMapping("/{statusId}")
-    public ResponseEntity<ResponseDto<UpdateStatusResponseDto>> updateStatus(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long boardId, @PathVariable Long statusId, @RequestBody @Valid StatusRequestDto statusRequestDto) {
-
+    public ResponseEntity<ResponseDto<UpdateStatusResponseDto>> updateStatus(
+        @AuthenticationPrincipal UserDetailsImpl userDetails,
+        @PathVariable Long boardId, @PathVariable Long statusId,
+        @RequestBody @Valid StatusRequestDto statusRequestDto
+    ) {
         UpdateStatusResponseDto updateStatusResponseDto = statusService.updateStatus(userDetails.getUser(), boardId, statusId, statusRequestDto);
         return ResponseEntity.created(createUri(updateStatusResponseDto.getStatusId()))
-                .body(ResponseDto.<UpdateStatusResponseDto>builder()
-                        .data(updateStatusResponseDto)
-                        .build());
+            .body(ResponseDto.<UpdateStatusResponseDto>builder()
+                .data(updateStatusResponseDto)
+                .build());
     }
 
     @DeleteMapping("/{statusId}")
-    public ResponseEntity<ResponseDto<Void>> deleteStatus(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long boardId, @PathVariable Long statusId) {
+    public ResponseEntity<ResponseDto<Void>> deleteStatus(
+        @AuthenticationPrincipal UserDetailsImpl userDetails,
+        @PathVariable Long boardId,
+        @PathVariable Long statusId
+    ) {
         statusService.deleteStatus(userDetails.getUser(), boardId, statusId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
-                .body(ResponseDto.<Void>builder().build());
+            .body(ResponseDto.<Void>builder().build());
     }
 
     private URI createUri(Long statusId) {
         return ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(statusId)
-                .toUri();
+            .path("/{id}")
+            .buildAndExpand(statusId)
+            .toUri();
     }
 }

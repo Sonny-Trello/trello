@@ -75,10 +75,10 @@ public class JwtUtil {
         Claims claims = Jwts.claims().setSubject(user.getUserId());
 
         return BEARER_PREFIX + Jwts.builder()
-                .setExpiration(new Date(date.getTime() + TOKEN_TIME))
-                .setIssuedAt(date)
-                .signWith(key, signatureAlgorithm)
-                .setClaims(claims)
-                .compact();
+            .setExpiration(new Date(date.getTime() + TOKEN_TIME))
+            .setIssuedAt(date)
+            .signWith(key, signatureAlgorithm)
+            .setClaims(claims)
+            .compact();
     }
 }

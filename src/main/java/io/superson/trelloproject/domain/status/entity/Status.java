@@ -4,6 +4,7 @@ import io.superson.trelloproject.domain.board.entity.Board;
 import io.superson.trelloproject.domain.common.entity.Timestamped;
 import io.superson.trelloproject.domain.status.dto.StatusRequestDto;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,6 +12,8 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
+@Builder
+@AllArgsConstructor
 @Table(name = "tb_status")
 public class Status extends Timestamped {
 
@@ -25,7 +28,6 @@ public class Status extends Timestamped {
     @JoinColumn(name = "board_id")
     private Board board;
 
-    @Builder
     public Status(String name, Board board) {
         this.name = name;
         this.board = board;
