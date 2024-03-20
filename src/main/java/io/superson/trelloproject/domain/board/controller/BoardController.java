@@ -2,6 +2,8 @@ package io.superson.trelloproject.domain.board.controller;
 
 import io.superson.trelloproject.domain.board.dto.BoardRequestDto;
 import io.superson.trelloproject.domain.board.dto.BoardResponseDto;
+import io.superson.trelloproject.domain.board.dto.InviteRequestDto;
+import io.superson.trelloproject.domain.board.dto.InviteResponseDto;
 import io.superson.trelloproject.domain.board.service.BoardService;
 import io.superson.trelloproject.domain.common.dto.ResponseDto;
 import io.superson.trelloproject.global.impl.UserDetailsImpl;
@@ -67,6 +69,18 @@ public class BoardController {
         List<BoardResponseDto> responseDto = boardService.getBoards(userDetails.getUser());
 
         return ResponseEntity.ok(ResponseDto.<List<BoardResponseDto>>builder()
+            .data(responseDto)
+            .build());
+    }
+
+    @PostMapping("boards/{id}/invite")
+    public ResponseEntity<ResponseDto<InviteResponseDto>> inviteBoard(
+        @PathVariable Long id,
+        @RequestBody String email
+    ) {
+        InviteResponseDto responseDto = boardService.inviteBoard(id, email);
+
+        return ResponseEntity.ok(ResponseDto.<InviteResponseDto>builder()
             .data(responseDto)
             .build());
     }
