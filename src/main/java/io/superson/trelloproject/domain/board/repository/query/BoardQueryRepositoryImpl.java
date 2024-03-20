@@ -20,20 +20,20 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepository {
     @Override
     public List<Board> findAllById(String userId) {
         return jpaQueryFactory
-                .select(board)
-                .from(userBoard, board)
-                .where(userBoard.user.userId.eq(userId))
-                .orderBy(board.modifiedAt.desc())
-                .fetch();
+            .select(board)
+            .from(userBoard, board)
+            .where(userBoard.user.userId.eq(userId))
+            .orderBy(board.modifiedAt.desc())
+            .fetch();
     }
 
     // boardId로 조회한 board에 속해 있는 user 리스트
     @Override
     public List<User> findAllByBoardId(Long boardId) {
         return jpaQueryFactory.select(user)
-                .from(user)
-                .join(userBoard).on(user.userId.eq(userBoard.user.userId))
-                .where(userBoard.board.boardId.eq(boardId))
-                .fetch();
+            .from(user)
+            .join(userBoard).on(user.userId.eq(userBoard.user.userId))
+            .where(userBoard.board.boardId.eq(boardId))
+            .fetch();
     }
 }

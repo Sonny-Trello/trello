@@ -55,6 +55,6 @@ public class WebSecurityConfig {
       httpSecurity.addFilterBefore(authorizationFilter(),
               UsernamePasswordAuthenticationFilter.class);
 
-        return httpSecurity.build();
+      return httpSecurity.build();
     }
 }
