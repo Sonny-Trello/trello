@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class UserBoardRepositoryImpl implements UserBoardRespository {
+public class UserBoardRepositoryImpl implements UserBoardRepository {
     private final UserBoardJpaRepository userBoardJpaRepository;
 
     @Override
