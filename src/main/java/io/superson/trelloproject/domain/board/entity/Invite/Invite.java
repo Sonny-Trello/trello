@@ -33,4 +33,8 @@ public class Invite {
         this.userId = user.getUserId();
         this.status = InviteStatus.STANDBY;
     }
+
+    public void update(String status) {
+        this.status = InviteStatus.valueOf(status);
+    }
 }

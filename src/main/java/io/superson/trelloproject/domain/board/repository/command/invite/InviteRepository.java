@@ -6,4 +6,5 @@ public interface InviteRepository {
 
     Invite save(Invite invite);
 
+    Invite findById(Long id);
 }

@@ -27,4 +27,5 @@ public class UserBoard {
         this.user = user;
         this.board = board;
     }
+
 }

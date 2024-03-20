@@ -4,6 +4,7 @@ import io.superson.trelloproject.domain.board.dto.BoardRequestDto;
 import io.superson.trelloproject.domain.board.dto.BoardResponseDto;
 import io.superson.trelloproject.domain.board.dto.InviteRequestDto;
 import io.superson.trelloproject.domain.board.dto.InviteResponseDto;
+import io.superson.trelloproject.domain.board.dto.InviteResultRequestDto;
 import io.superson.trelloproject.domain.board.service.BoardService;
 import io.superson.trelloproject.domain.common.dto.ResponseDto;
 import io.superson.trelloproject.global.impl.UserDetailsImpl;
@@ -71,14 +72,26 @@ public class BoardController {
     @PostMapping("boards/{id}/invite")
     public ResponseEntity<ResponseDto<InviteResponseDto>> inviteBoard(
         @PathVariable Long id,
-        @RequestBody String email
+        @RequestBody InviteRequestDto requestDto
     ) {
-        InviteResponseDto responseDto = boardService.inviteBoard(id, email);
+        InviteResponseDto responseDto = boardService.inviteBoard(id, requestDto);
 
         return ResponseEntity.ok(ResponseDto.<InviteResponseDto>builder()
             .data(responseDto)
             .build());
     }
+
+    @PatchMapping("boards/{id}/invite/result")
+    public ResponseEntity<ResponseDto<Void>> inviteResult(
+        @PathVariable Long id,
+        @RequestBody InviteResultRequestDto requestDto
+    ) {
+        boardService.inviteResult(id, requestDto);
+
+        return ResponseEntity.ok(ResponseDto.<Void>builder()
+            .build());
+    }
+
 
     private URI createUri(Long todoId) {
         return ServletUriComponentsBuilder.fromCurrentRequest()
