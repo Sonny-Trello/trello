@@ -35,26 +35,26 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity)
-            throws Exception {
+        throws Exception {
 
-      //CSRF 설정하기
-      httpSecurity.csrf((csrf) -> csrf.disable());
+        //CSRF 설정하기
+        httpSecurity.csrf((csrf) -> csrf.disable());
 
-      httpSecurity.sessionManagement((sessionManagement) ->
-              sessionManagement.sessionCreationPolicy(
-                      SessionCreationPolicy.STATELESS));
+        httpSecurity.sessionManagement((sessionManagement) ->
+            sessionManagement.sessionCreationPolicy(
+                SessionCreationPolicy.STATELESS));
 
-      httpSecurity.authorizeHttpRequests((authorizeHttpRequests) ->
-              authorizeHttpRequests
-                      .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-                      .requestMatchers("/users/signup").permitAll()
-                      .requestMatchers("/users/login").permitAll() // permitAll() : 접근 허가
-                      .anyRequest().authenticated() // authenticated() : jwt 인증 필요함
-      );
+        httpSecurity.authorizeHttpRequests((authorizeHttpRequests) ->
+            authorizeHttpRequests
+                .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+                .requestMatchers("/users/signup").permitAll()
+                .requestMatchers("/users/login").permitAll() // permitAll() : 접근 허가
+                .anyRequest().authenticated() // authenticated() : jwt 인증 필요함
+        );
 
-      httpSecurity.addFilterBefore(authorizationFilter(),
-              UsernamePasswordAuthenticationFilter.class);
+        httpSecurity.addFilterBefore(authorizationFilter(),
+            UsernamePasswordAuthenticationFilter.class);
 
-      return httpSecurity.build();
+        return httpSecurity.build();
     }
 }

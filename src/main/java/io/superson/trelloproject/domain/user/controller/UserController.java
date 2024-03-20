@@ -39,8 +39,7 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<ResponseDto<UserResponseDto>> getUserInfo(@AuthenticationPrincipal
-                                                                    UserDetailsImpl userDetails) {
+    public ResponseEntity<ResponseDto<UserResponseDto>> getUserInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         UserResponseDto userResponseDto = userService.getUserInfo(
             userDetails.getUser().getUserId());
         return ResponseEntity.ok().body(ResponseDto.<UserResponseDto>builder()

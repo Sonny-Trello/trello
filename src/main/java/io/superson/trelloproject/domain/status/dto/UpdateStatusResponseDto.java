@@ -7,6 +7,7 @@ import lombok.Getter;
 import java.time.LocalDateTime;
 
 @Getter
+@Builder
 public class UpdateStatusResponseDto {
 
     private Long statusId;
@@ -14,7 +15,6 @@ public class UpdateStatusResponseDto {
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
-    @Builder
     public UpdateStatusResponseDto(Status status) {
         this.statusId = status.getStatusId();
         this.name = status.getName();
