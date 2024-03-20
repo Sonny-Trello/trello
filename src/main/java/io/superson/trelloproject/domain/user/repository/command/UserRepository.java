@@ -9,4 +9,8 @@ public interface UserRepository {
     Optional<User> findByEmail(String email);
 
     User save(User save);
+
+    Optional<User> findById(String userId);
+
+    void deleteById(String userId);
 }
