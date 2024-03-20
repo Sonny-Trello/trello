@@ -1,13 +1,7 @@
 package io.superson.trelloproject.domain.user.repository.query;
 
-import com.querydsl.jpa.impl.JPAQueryFactory;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
+import io.superson.trelloproject.domain.user.entity.User;
 
-@Repository
-@RequiredArgsConstructor
-public class UserQueryRepository {
-
-  private final JPAQueryFactory jpaQueryFactory;
+public interface UserQueryRepository {
+    User findByUserAndComment(String userId, Long commentId);
 }
-

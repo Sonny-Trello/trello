@@ -5,6 +5,7 @@ import io.superson.trelloproject.domain.comment.service.CommentService;
 import io.superson.trelloproject.domain.common.dto.ResponseDto;
 import io.superson.trelloproject.global.impl.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
@@ -34,6 +35,14 @@ public class CommentController {
                                                            @RequestBody @Validated CommentRequestDto commentRequestDto) {
         commentService.updateComment(userDetails.getUser(), boardId, ticketId, commentId, commentRequestDto);
         return ResponseEntity.created(createUri(boardId))
+                .body(ResponseDto.<Void>builder().build());
+    }
+
+    @DeleteMapping("/{commentId}")
+    public ResponseEntity<ResponseDto<Void>> deleteComment(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long boardId,
+                                                           @PathVariable Long ticketId, @PathVariable Long commentId) {
+        commentService.deleteComment(userDetails.getUser(), boardId, ticketId, commentId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
                 .body(ResponseDto.<Void>builder().build());
     }
 
