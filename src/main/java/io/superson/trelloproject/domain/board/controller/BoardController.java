@@ -1,5 +1,6 @@
 package io.superson.trelloproject.domain.board.controller;
 
+import io.superson.trelloproject.domain.board.dto.BoardInfoResponseDto;
 import io.superson.trelloproject.domain.board.dto.BoardRequestDto;
 import io.superson.trelloproject.domain.board.dto.BoardResponseDto;
 import io.superson.trelloproject.domain.board.dto.InviteRequestDto;
@@ -65,6 +66,17 @@ public class BoardController {
         List<BoardResponseDto> responseDto = boardService.getBoards(userDetails.getUser());
 
         return ResponseEntity.ok(ResponseDto.<List<BoardResponseDto>>builder()
+            .data(responseDto)
+            .build());
+    }
+
+    @GetMapping("boards/{id}")
+    public ResponseEntity<ResponseDto<BoardInfoResponseDto>> getBoard(
+        @PathVariable Long id
+    ) {
+        BoardInfoResponseDto responseDto = boardService.getBoard(id);
+
+        return ResponseEntity.ok(ResponseDto.<BoardInfoResponseDto>builder()
             .data(responseDto)
             .build());
     }

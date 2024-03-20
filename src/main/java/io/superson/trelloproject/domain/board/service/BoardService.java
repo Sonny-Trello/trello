@@ -1,5 +1,6 @@
 package io.superson.trelloproject.domain.board.service;
 
+import io.superson.trelloproject.domain.board.dto.BoardInfoResponseDto;
 import io.superson.trelloproject.domain.board.dto.BoardRequestDto;
 import io.superson.trelloproject.domain.board.dto.BoardResponseDto;
 import io.superson.trelloproject.domain.board.dto.InviteRequestDto;
@@ -8,10 +9,12 @@ import io.superson.trelloproject.domain.board.dto.InviteResultRequestDto;
 import io.superson.trelloproject.domain.board.entity.Board;
 import io.superson.trelloproject.domain.board.entity.Invite.Invite;
 import io.superson.trelloproject.domain.board.entity.UserBoard;
-import io.superson.trelloproject.domain.board.repository.command.BoardRepository;
-import io.superson.trelloproject.domain.board.repository.command.UserBoardRepository;
+import io.superson.trelloproject.domain.board.repository.command.board.BoardRepository;
 import io.superson.trelloproject.domain.board.repository.command.invite.InviteRepository;
+import io.superson.trelloproject.domain.board.repository.command.userBoard.UserBoardRepository;
 import io.superson.trelloproject.domain.board.repository.query.BoardQueryRepository;
+import io.superson.trelloproject.domain.status.entity.Status;
+import io.superson.trelloproject.domain.status.repository.query.StatusQueryRepository;
 import io.superson.trelloproject.domain.user.entity.User;
 import io.superson.trelloproject.domain.user.repository.command.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -29,6 +32,7 @@ public class BoardService {
     private final UserBoardRepository userBoardRepository;
     private final InviteRepository inviteRepository;
     private final UserRepository userRepository;
+    private final StatusQueryRepository statusQueryRepository;
 
     public BoardResponseDto createBoard(User user, BoardRequestDto requestDto) {
         Board board = boardRepository.save(new Board(requestDto, user));
@@ -55,6 +59,14 @@ public class BoardService {
         return boards.stream().map(BoardResponseDto::new).toList();
     }
 
+    @Transactional(readOnly = true)
+    public BoardInfoResponseDto getBoard(Long id) {
+        Board board = boardRepository.findById(id);
+        List<String> statuses = statusQueryRepository.findAllByBoardId(id);
+
+        return new BoardInfoResponseDto(board, statuses);
+    }
+
     public InviteResponseDto inviteBoard(Long id, InviteRequestDto requestDto) {
         Board board = boardRepository.findById(id);
 
@@ -77,4 +89,5 @@ public class BoardService {
             userBoardRepository.save(new UserBoard(user, board));
         }
     }
+
 }
