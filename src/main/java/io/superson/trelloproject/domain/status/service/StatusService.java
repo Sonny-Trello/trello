@@ -1,13 +1,13 @@
 package io.superson.trelloproject.domain.status.service;
 
 import io.superson.trelloproject.domain.board.entity.Board;
-import io.superson.trelloproject.domain.board.repository.command.BoardRepository;
+import io.superson.trelloproject.domain.board.repository.command.board.BoardRepository;
 import io.superson.trelloproject.domain.board.repository.query.BoardQueryRepository;
 import io.superson.trelloproject.domain.status.dto.CreateStatusResponseDto;
 import io.superson.trelloproject.domain.status.dto.StatusRequestDto;
 import io.superson.trelloproject.domain.status.dto.UpdateStatusResponseDto;
 import io.superson.trelloproject.domain.status.entity.Status;
-import io.superson.trelloproject.domain.status.repository.StatusRepository;
+import io.superson.trelloproject.domain.status.repository.command.StatusRepository;
 import io.superson.trelloproject.domain.user.entity.User;
 import io.superson.trelloproject.global.exception.UserPermissionException;
 import jakarta.transaction.Transactional;
