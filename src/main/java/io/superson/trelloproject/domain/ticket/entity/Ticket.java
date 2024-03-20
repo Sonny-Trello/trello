@@ -25,13 +25,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import io.superson.trelloproject.domain.board.entity.Board;
-import io.superson.trelloproject.domain.common.entity.Timestamped;
-import io.superson.trelloproject.domain.status.entity.Status;
-import io.superson.trelloproject.global.util.Color;
-import jakarta.persistence.*;
-
-import java.sql.Timestamp;
 
 @Getter
 @Builder
@@ -47,12 +40,7 @@ public class Ticket extends Timestamped {
 
     @Column(nullable = false)
     private String name;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long ticketId;
 
-    @Column(nullable = false)
-    private String name;
     @Enumerated(EnumType.STRING)
     private Color color;
     private String description;
@@ -69,26 +57,6 @@ public class Ticket extends Timestamped {
     @OneToMany(mappedBy = "ticket", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Assignee> assignees = new ArrayList<>();
 
-    @Column
-    @Enumerated(EnumType.STRING)
-    private Color color;
-
-    @Column(nullable = false)
-    private String description;
-
-    @Column
-    private Timestamp deadline;
-
-    @ManyToOne
-    @JoinColumn(name = "board_id")
-    private Board board;
-
-    @ManyToOne
-    @JoinColumn(name = "status_id")
-    private Status status;
-
-    @OneToMany(mappedBy = "ticket", orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<Assignee> assignees = new ArrayList<>();
     public void setParents(Board board, Status status) {
         this.board = board;
         this.status = status;
