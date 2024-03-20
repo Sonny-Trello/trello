@@ -1,8 +1,8 @@
 package io.superson.trelloproject.domain.ticket.controller;
 
 import io.superson.trelloproject.domain.common.dto.ResponseDto;
-import io.superson.trelloproject.domain.ticket.dto.TicketCreateRequestDto;
 import io.superson.trelloproject.domain.ticket.dto.TicketDetailsResponseDto;
+import io.superson.trelloproject.domain.ticket.dto.TicketRequestDto;
 import io.superson.trelloproject.domain.ticket.dto.TicketResponseDto;
 import io.superson.trelloproject.domain.ticket.service.TicketService;
 import io.superson.trelloproject.global.impl.UserDetailsImpl;
@@ -15,6 +15,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,7 +32,7 @@ public class TicketController {
     public ResponseEntity<ResponseDto<TicketResponseDto>> createTicket(
         final @PathVariable @Positive @Validated Long boardId,
         final @PathVariable @Positive @Validated Long statusId,
-        final @RequestBody @Validated TicketCreateRequestDto requestDto,
+        final @RequestBody @Validated TicketRequestDto requestDto,
         final @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
         TicketResponseDto responseDto = ticketService.createTicket(
@@ -54,6 +55,23 @@ public class TicketController {
         TicketDetailsResponseDto responseDto = ticketService.findTicket(
             boardId,
             ticketId,
+            userDetails.getUser().getUserId()
+        );
+
+        return ResponseEntity.ok(ResponseDto.of(responseDto));
+    }
+
+    @PutMapping("/tickets/{ticketId}")
+    public ResponseEntity<ResponseDto<TicketResponseDto>> updateTicket(
+        final @PathVariable @Positive Long boardId,
+        final @PathVariable @Positive Long ticketId,
+        final @RequestBody @Validated TicketRequestDto requestDto,
+        final @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        TicketResponseDto responseDto = ticketService.updateTicket(
+            boardId,
+            ticketId,
+            requestDto,
             userDetails.getUser().getUserId()
         );
 

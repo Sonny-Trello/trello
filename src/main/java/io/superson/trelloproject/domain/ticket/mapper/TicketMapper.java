@@ -1,8 +1,8 @@
 package io.superson.trelloproject.domain.ticket.mapper;
 
 import io.superson.trelloproject.domain.comment.entity.Comment;
-import io.superson.trelloproject.domain.ticket.dto.TicketCreateRequestDto;
 import io.superson.trelloproject.domain.ticket.dto.TicketDetailsResponseDto;
+import io.superson.trelloproject.domain.ticket.dto.TicketRequestDto;
 import io.superson.trelloproject.domain.ticket.dto.TicketResponseDto;
 import io.superson.trelloproject.domain.ticket.entity.Ticket;
 import io.superson.trelloproject.domain.ticket.repository.vo.TicketDetailsVo;
@@ -18,7 +18,7 @@ public class TicketMapper {
     private static final Random random = new Random();
 
     public static Ticket toEntity(
-        final TicketCreateRequestDto requestDto
+        final TicketRequestDto requestDto
     ) {
         Color color = (requestDto.getColor() != null)
             ? Color.valueOf(requestDto.getColor())

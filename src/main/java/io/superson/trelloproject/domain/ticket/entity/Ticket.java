@@ -3,6 +3,7 @@ package io.superson.trelloproject.domain.ticket.entity;
 import io.superson.trelloproject.domain.board.entity.Board;
 import io.superson.trelloproject.domain.common.entity.Timestamped;
 import io.superson.trelloproject.domain.status.entity.Status;
+import io.superson.trelloproject.domain.ticket.dto.TicketRequestDto;
 import io.superson.trelloproject.global.util.Color;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -20,13 +21,16 @@ import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
+@Setter(AccessLevel.PROTECTED)
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
@@ -56,6 +60,14 @@ public class Ticket extends Timestamped {
 
     @OneToMany(mappedBy = "ticket", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Assignee> assignees = new ArrayList<>();
+
+    public void update(TicketRequestDto requestDto, List<Assignee> assignees) {
+        Optional.ofNullable(requestDto.getName()).ifPresent(this::setName);
+        Optional.ofNullable(requestDto.getDescription()).ifPresent(this::setDescription);
+        Optional.ofNullable(requestDto.getColor()).ifPresent(c -> setColor(Color.valueOf(c)));
+        Optional.ofNullable(requestDto.getDeadline()).ifPresent(this::setDeadline);
+        this.assignees = assignees;
+    }
 
     public void setParents(Board board, Status status) {
         this.board = board;

@@ -2,8 +2,8 @@ package io.superson.trelloproject.domain.ticket.service;
 
 import io.superson.trelloproject.domain.board.entity.Board;
 import io.superson.trelloproject.domain.status.entity.Status;
-import io.superson.trelloproject.domain.ticket.dto.TicketCreateRequestDto;
 import io.superson.trelloproject.domain.ticket.dto.TicketDetailsResponseDto;
+import io.superson.trelloproject.domain.ticket.dto.TicketRequestDto;
 import io.superson.trelloproject.domain.ticket.dto.TicketResponseDto;
 import io.superson.trelloproject.domain.ticket.entity.Assignee;
 import io.superson.trelloproject.domain.ticket.entity.Ticket;
@@ -28,7 +28,7 @@ public class TicketService {
     public TicketResponseDto createTicket(
         final Long boardId,
         final Long statusId,
-        final TicketCreateRequestDto requestDto,
+        final TicketRequestDto requestDto,
         final String userId
     ) {
         Board board = validateBoard(boardId);
@@ -52,6 +52,25 @@ public class TicketService {
 
         return ticketRepository.findTicketDetailsById(ticketId)
             .orElseThrow(() -> new EntityNotFoundException("Ticket not found"));
+    }
+
+    public TicketResponseDto updateTicket(
+        Long boardId,
+        Long ticketId,
+        TicketRequestDto requestDto,
+        String userId
+    ) {
+        Board board = validateBoard(boardId);
+        User user = validateUserAccess(boardId, userId);
+        Ticket ticket = validateTicketAccess(boardId, ticketId);
+
+        List<Assignee> assignees = userRepository.findUsersByEmails(requestDto.getAssigneeEmails())
+            .stream()
+            .map(Assignee::new)
+            .toList();
+        Ticket updatedTicket = ticketRepository.update(ticketId, requestDto, assignees);
+
+        return TicketMapper.toTicketResponseDto(updatedTicket);
     }
 
     private Board validateBoard(Long boardId) {

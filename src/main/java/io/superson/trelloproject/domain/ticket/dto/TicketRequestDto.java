@@ -11,7 +11,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 @Getter
 @AllArgsConstructor
-public class TicketCreateRequestDto {
+public class TicketRequestDto {
 
     @NotBlank
     private String name;
