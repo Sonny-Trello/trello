@@ -20,7 +20,7 @@ public class Invite {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long userBoardId;
+    private Long inviteId;
 
     @Enumerated(EnumType.STRING)
     private InviteStatus status;
