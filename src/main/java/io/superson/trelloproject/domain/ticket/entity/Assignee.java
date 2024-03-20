@@ -8,10 +8,13 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "tb_assignee")
 public class Assignee {
 
@@ -27,5 +30,14 @@ public class Assignee {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
+    public Assignee(User user) {
+        this.user = user;
+    }
+
+    public void setTicket(Ticket ticket) {
+        this.ticket = ticket;
+        this.assigneeId = new AssigneeId(ticket.getTicketId(), user.getUserId());
+    }
 
 }

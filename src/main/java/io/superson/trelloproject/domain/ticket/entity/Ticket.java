@@ -1,15 +1,20 @@
 package io.superson.trelloproject.domain.ticket.entity;
 
+import io.superson.trelloproject.domain.board.entity.Board;
 import io.superson.trelloproject.domain.common.entity.Timestamped;
+import io.superson.trelloproject.domain.status.entity.Status;
 import io.superson.trelloproject.global.util.Color;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
@@ -53,6 +58,14 @@ public class Ticket extends Timestamped {
     private String description;
     private LocalDateTime deadline;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "board_id", nullable = false, updatable = false)
+    private Board board;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "status_id", nullable = false)
+    private Status status;
+
     @OneToMany(mappedBy = "ticket", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Assignee> assignees = new ArrayList<>();
 
@@ -76,4 +89,22 @@ public class Ticket extends Timestamped {
 
     @OneToMany(mappedBy = "ticket", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Assignee> assignees = new ArrayList<>();
+    public void setParents(Board board, Status status) {
+        this.board = board;
+        this.status = status;
+    }
+
+    public void addAssignee(Assignee assignee) {
+        if (assignees.contains(assignee)) {
+            return;
+        }
+
+        assignees.add(assignee);
+        assignee.setTicket(this);
+    }
+
+    public void addAssignees(List<Assignee> assignees) {
+        assignees.forEach(this::addAssignee);
+    }
+
 }
