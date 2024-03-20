@@ -3,7 +3,7 @@ package io.superson.trelloproject.domain.ticket.entity;
 import io.superson.trelloproject.domain.board.entity.Board;
 import io.superson.trelloproject.domain.common.entity.Timestamped;
 import io.superson.trelloproject.domain.status.entity.Status;
-import io.superson.trelloproject.domain.ticket.dto.TicketRequestDto;
+import io.superson.trelloproject.domain.ticket.dto.TicketCreateRequestDto;
 import io.superson.trelloproject.global.util.Color;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -54,6 +54,7 @@ public class Ticket extends Timestamped {
     @JoinColumn(name = "board_id", nullable = false, updatable = false)
     private Board board;
 
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "status_id", nullable = false)
     private Status status;
@@ -61,7 +62,7 @@ public class Ticket extends Timestamped {
     @OneToMany(mappedBy = "ticket", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Assignee> assignees = new ArrayList<>();
 
-    public void update(TicketRequestDto requestDto, List<Assignee> assignees) {
+    public void update(TicketCreateRequestDto requestDto, List<Assignee> assignees) {
         Optional.ofNullable(requestDto.getName()).ifPresent(this::setName);
         Optional.ofNullable(requestDto.getDescription()).ifPresent(this::setDescription);
         Optional.ofNullable(requestDto.getColor()).ifPresent(c -> setColor(Color.valueOf(c)));

@@ -2,8 +2,9 @@ package io.superson.trelloproject.domain.ticket.service;
 
 import io.superson.trelloproject.domain.board.entity.Board;
 import io.superson.trelloproject.domain.status.entity.Status;
+import io.superson.trelloproject.domain.status.repository.command.StatusRepository;
+import io.superson.trelloproject.domain.ticket.dto.TicketCreateRequestDto;
 import io.superson.trelloproject.domain.ticket.dto.TicketDetailsResponseDto;
-import io.superson.trelloproject.domain.ticket.dto.TicketRequestDto;
 import io.superson.trelloproject.domain.ticket.dto.TicketResponseDto;
 import io.superson.trelloproject.domain.ticket.entity.Assignee;
 import io.superson.trelloproject.domain.ticket.entity.Ticket;
@@ -23,17 +24,18 @@ import org.springframework.transaction.annotation.Transactional;
 public class TicketService {
 
     private final TicketRepository ticketRepository;
+    private final StatusRepository statusRepository;
     private final UserRepository userRepository;
 
     public TicketResponseDto createTicket(
         final Long boardId,
         final Long statusId,
-        final TicketRequestDto requestDto,
+        final TicketCreateRequestDto requestDto,
         final String userId
     ) {
         Board board = validateBoard(boardId);
         User user = validateUserAccess(boardId, userId);
-        Status status = validateStatus(statusId);
+        Status status = statusRepository.findStatusOrElseThrow(statusId);
 
         List<Assignee> assignees = userRepository.findUsersByEmails(requestDto.getAssigneeEmails())
             .stream()
@@ -45,53 +47,43 @@ public class TicketService {
     }
 
     @Transactional(readOnly = true)
-    public TicketDetailsResponseDto findTicket(Long boardId, Long ticketId, String userId) {
-        Board board = validateBoard(boardId);
-        User user = validateUserAccess(boardId, userId);
-        Ticket ticket = validateTicketAccess(boardId, ticketId);
-
-        return ticketRepository.findTicketDetailsById(ticketId)
+    public TicketDetailsResponseDto findTicketDetails(Long boardId, Long ticketId, String userId) {
+        return ticketRepository.findTicketDetailsById(boardId, ticketId)
             .orElseThrow(() -> new EntityNotFoundException("Ticket not found"));
     }
 
     public TicketResponseDto updateTicket(
-        Long boardId,
-        Long ticketId,
-        TicketRequestDto requestDto,
-        String userId
+        Long boardId, Long ticketId, TicketCreateRequestDto requestDto, String userId
     ) {
-        Board board = validateBoard(boardId);
-        User user = validateUserAccess(boardId, userId);
-        Ticket ticket = validateTicketAccess(boardId, ticketId);
+        validateUserAccess(boardId, userId);
 
         List<Assignee> assignees = userRepository.findUsersByEmails(requestDto.getAssigneeEmails())
             .stream()
             .map(Assignee::new)
             .toList();
-        Ticket updatedTicket = ticketRepository.update(ticketId, requestDto, assignees);
+        Ticket updatedTicket = ticketRepository.update(boardId, ticketId, requestDto, assignees);
 
         return TicketMapper.toTicketResponseDto(updatedTicket);
     }
 
-    private Board validateBoard(Long boardId) {
+    public TicketResponseDto updateStatus(
+        Long boardId, Long ticketId, Long statusId, String userId
+    ) {
+        User user = validateUserAccess(boardId, userId);
+        Status status = statusRepository.findStatusOrElseThrow(statusId);
+
+        Ticket updatedTicket = ticketRepository.updateStatus(boardId, ticketId, status);
+
+        return TicketMapper.toTicketResponseDto(updatedTicket);
+    }
+
+    private Board validateBoard(Long boardId) throws EntityNotFoundException {
         // TODO: Implement
 
         return null;
     }
 
-    private Status validateStatus(Long statusId) {
-        // TODO: Implement
-
-        return null;
-    }
-
-    private Ticket validateTicketAccess(Long boardId, Long ticketId) {
-        // TODO: Implement
-
-        return null;
-    }
-
-    private User validateUserAccess(Long boardId, String userId) {
+    private User validateUserAccess(Long boardId, String userId) throws EntityNotFoundException {
         // TODO: Implement
 
         return null;

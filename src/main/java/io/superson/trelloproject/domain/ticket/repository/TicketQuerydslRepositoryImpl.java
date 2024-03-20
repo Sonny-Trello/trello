@@ -1,5 +1,8 @@
 package io.superson.trelloproject.domain.ticket.repository;
 
+import static io.superson.trelloproject.domain.ticket.entity.QTicket.ticket;
+
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.superson.trelloproject.domain.ticket.entity.QTicket;
 import io.superson.trelloproject.domain.ticket.entity.Ticket;
@@ -16,14 +19,25 @@ public class TicketQuerydslRepositoryImpl implements TicketQuerydslRepository {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Optional<TicketDetailsVo> findTicketDetails(Long ticketId) {
-        QTicket qTicket = QTicket.ticket;
+    public Optional<Ticket> findByBoardIdAndTicketId(Long boardId, Long ticketId) {
+        BooleanBuilder condition = new BooleanBuilder();
+        condition.and(ticket.board.boardId.eq(boardId));
+        condition.and(ticket.ticketId.eq(ticketId));
 
+        return Optional.ofNullable(
+            queryFactory.selectFrom(ticket)
+                .where(condition)
+                .fetchOne()
+        );
+    }
+
+    @Override
+    public Optional<TicketDetailsVo> findTicketDetails(Long ticketId) {
         // TODO: Implement the query to get comments by ticketId
 
         Optional<Ticket> ticket = Optional.ofNullable(
-            queryFactory.selectFrom(qTicket)
-                .where(qTicket.ticketId.eq(ticketId))
+            queryFactory.selectFrom(QTicket.ticket)
+                .where(QTicket.ticket.ticketId.eq(ticketId))
                 .fetchOne()
         );
 
