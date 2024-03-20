@@ -5,6 +5,6 @@ import lombok.Builder;
 @Builder
 public class SignUpResponseDto {
 
-  String userId;
-  String email;
+    String userId;
+    String email;
 }

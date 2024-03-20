@@ -1,8 +1,9 @@
 package io.superson.trelloproject.domain.user.dto;
 
 import io.superson.trelloproject.domain.user.entity.User;
-import java.time.LocalDateTime;
 import lombok.Getter;
+
+import java.time.LocalDateTime;
 
 @Getter
 public class UserResponseDto {

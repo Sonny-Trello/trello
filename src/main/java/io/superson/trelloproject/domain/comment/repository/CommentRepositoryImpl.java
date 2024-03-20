@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class CommentRepositoryImpl implements CommentRepository {
 
-  private final CommentJpaRepository commentJpaRepository;
+    private final CommentJpaRepository commentJpaRepository;
 }

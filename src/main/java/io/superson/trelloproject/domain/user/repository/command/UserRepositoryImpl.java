@@ -1,9 +1,10 @@
 package io.superson.trelloproject.domain.user.repository.command;
 
 import io.superson.trelloproject.domain.user.entity.User;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
