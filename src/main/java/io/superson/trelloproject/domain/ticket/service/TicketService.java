@@ -11,8 +11,8 @@ import io.superson.trelloproject.domain.ticket.mapper.TicketMapper;
 import io.superson.trelloproject.domain.ticket.repository.TicketRepository;
 import io.superson.trelloproject.domain.user.entity.User;
 import io.superson.trelloproject.domain.user.repository.command.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
-import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,19 +44,35 @@ public class TicketService {
         return TicketMapper.toTicketResponseDto(savedTicket);
     }
 
+    @Transactional(readOnly = true)
+    public TicketDetailsResponseDto findTicket(Long boardId, Long ticketId, String userId) {
+        Board board = validateBoard(boardId);
+        User user = validateUserAccess(boardId, userId);
+        Ticket ticket = validateTicketAccess(boardId, ticketId);
+
+        return ticketRepository.findTicketDetailsById(ticketId)
+            .orElseThrow(() -> new EntityNotFoundException("Ticket not found"));
+    }
+
     private Board validateBoard(Long boardId) {
         // TODO: Implement
 
         return null;
     }
 
-    private User validateUserAccess(Long boardId, String userId) {
+    private Status validateStatus(Long statusId) {
         // TODO: Implement
 
         return null;
     }
 
-    private Status validateStatus(Long statusId) {
+    private Ticket validateTicketAccess(Long boardId, Long ticketId) {
+        // TODO: Implement
+
+        return null;
+    }
+
+    private User validateUserAccess(Long boardId, String userId) {
         // TODO: Implement
 
         return null;
