@@ -17,7 +17,7 @@ public class BoardRepositoryImpl implements BoardRepository {
     @Override
     public Board findById(Long id) {
         return boardJpaRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("해당하는 보드가 없습니다."));
+            () -> new IllegalArgumentException("해당하는 보드가 없습니다."));
     }
 
     @Override

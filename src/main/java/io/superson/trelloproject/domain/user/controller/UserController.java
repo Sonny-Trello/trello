@@ -23,7 +23,7 @@ public class UserController {
 
     @PostMapping("/signup")
     public ResponseEntity<ResponseDto<Void>> signUp(
-            @RequestBody @Validated SignUpRequestDto requestDto) {
+        @RequestBody @Validated SignUpRequestDto requestDto) {
         userService.signUp(requestDto);
 
         return ResponseEntity.ok().build();
@@ -31,8 +31,8 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<ResponseDto<Void>> login(
-            @RequestBody @Validated LoginRequestDto requestDto,
-            HttpServletResponse httpServletResponse) {
+        @RequestBody @Validated LoginRequestDto requestDto,
+        HttpServletResponse httpServletResponse) {
         userService.login(requestDto, httpServletResponse);
 
         return ResponseEntity.ok().build();
@@ -42,30 +42,30 @@ public class UserController {
     public ResponseEntity<ResponseDto<UserResponseDto>> getUserInfo(@AuthenticationPrincipal
                                                                     UserDetailsImpl userDetails) {
         UserResponseDto userResponseDto = userService.getUserInfo(
-                userDetails.getUser().getUserId());
+            userDetails.getUser().getUserId());
         return ResponseEntity.ok().body(ResponseDto.<UserResponseDto>builder()
-                .data(userResponseDto)
-                .build());
+            .data(userResponseDto)
+            .build());
     }
 
     @PatchMapping
     public ResponseEntity<ResponseDto<Void>> updatePassword(
-            @RequestBody PasswordUpdateRequestDto requestDto,
-            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        @RequestBody PasswordUpdateRequestDto requestDto,
+        @AuthenticationPrincipal UserDetailsImpl userDetails) {
         userService.passwordUpdate(requestDto, userDetails.getUser());
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/logout")
     public ResponseEntity<ResponseDto<Void>> logout(
-            HttpServletResponse httpServletResponse) {
+        HttpServletResponse httpServletResponse) {
         userService.logout(httpServletResponse);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/withdraw")
     public ResponseEntity<ResponseDto<Void>> withdraw(
-            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        @AuthenticationPrincipal UserDetailsImpl userDetails) {
         userService.withdraw(userDetails.getUser().getUserId());
         return ResponseEntity.ok().build();
     }
