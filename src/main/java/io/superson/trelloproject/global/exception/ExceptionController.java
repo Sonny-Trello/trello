@@ -1,13 +1,13 @@
 package io.superson.trelloproject.global.exception;
 
 import io.superson.trelloproject.domain.common.dto.ExceptionDto;
+import io.superson.trelloproject.domain.user.exception.UserNotFoundException;
+import java.util.NoSuchElementException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import java.util.NoSuchElementException;
 
 @RestControllerAdvice
 public class ExceptionController {
@@ -17,7 +17,8 @@ public class ExceptionController {
         return createResponse(HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
-    @ExceptionHandler({NullPointerException.class, NoSuchElementException.class})
+    @ExceptionHandler({NullPointerException.class, NoSuchElementException.class,
+        UserNotFoundException.class})
     public ResponseEntity<ExceptionDto> handleNotFoundException(Exception ex) {
         return createResponse(HttpStatus.NOT_FOUND, ex.getMessage());
     }
@@ -26,7 +27,8 @@ public class ExceptionController {
     public ResponseEntity<ExceptionDto> handleMethodArgumentNotValidException(
         MethodArgumentNotValidException e
     ) {
-        return createResponse(HttpStatus.BAD_REQUEST, e.getBindingResult().getFieldError().getDefaultMessage());
+        return createResponse(HttpStatus.BAD_REQUEST,
+            e.getBindingResult().getFieldError().getDefaultMessage());
     }
 
     private ResponseEntity<ExceptionDto> createResponse(HttpStatus status, String message) {
