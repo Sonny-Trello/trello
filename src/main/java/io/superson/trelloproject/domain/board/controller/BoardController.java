@@ -81,12 +81,12 @@ public class BoardController {
             .build());
     }
 
-    @PatchMapping("boards/{id}/invite/result")
+    @PatchMapping("invite/{inviteId}")
     public ResponseEntity<ResponseDto<Void>> inviteResult(
-        @PathVariable Long id,
+        @PathVariable Long inviteId,
         @RequestBody InviteResultRequestDto requestDto
     ) {
-        boardService.inviteResult(id, requestDto);
+        boardService.inviteResult(inviteId, requestDto);
 
         return ResponseEntity.ok(ResponseDto.<Void>builder()
             .build());

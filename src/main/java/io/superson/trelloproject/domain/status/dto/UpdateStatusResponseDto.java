@@ -1,6 +1,7 @@
 package io.superson.trelloproject.domain.status.dto;
 
 import io.superson.trelloproject.domain.status.entity.Status;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -8,6 +9,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
+@AllArgsConstructor
 public class UpdateStatusResponseDto {
 
     private Long statusId;

@@ -64,14 +64,14 @@ public class BoardService {
         Invite invite = new Invite(board, user);
         inviteRepository.save(invite);
 
-        return new InviteResponseDto();
+        return new InviteResponseDto(invite);
     }
 
     public void inviteResult(Long id, InviteResultRequestDto requestDto) {
         Invite invite = inviteRepository.findById(id);
         invite.update(requestDto.getStatus());
 
-        if (requestDto.getStatus().equals("ACCEPT")) {
+        if (requestDto.getStatus().equals("ACCEPTED")) {
             User user = userRepository.findById(invite.getUserId()).orElseThrow();
             Board board = boardRepository.findById(invite.getBoardId());
             userBoardRepository.save(new UserBoard(user, board));
