@@ -2,6 +2,7 @@ package io.superson.trelloproject.domain.comment.entity;
 
 import io.superson.trelloproject.domain.comment.dto.CommentRequestDto;
 import io.superson.trelloproject.domain.common.entity.Timestamped;
+import io.superson.trelloproject.domain.ticket.entity.Ticket;
 import io.superson.trelloproject.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -28,14 +29,14 @@ public class Comment extends Timestamped {
     @JoinColumn(name = "user_id")
     private User user;
 
-//    @ManyToOne
-//    @JoinColumn(name = "ticket_id")
-//    private Ticket ticket;
+    @ManyToOne
+    @JoinColumn(name = "ticket_id")
+    private Ticket ticket;
 
-    public Comment(String content, User user) {
+    public Comment(String content, User user, Ticket ticket) {
         this.content = content;
         this.user = user;
-//        this.ticket = ticket;
+        this.ticket = ticket;
     }
 
     public void updateComment(CommentRequestDto commentRequestDto) {
