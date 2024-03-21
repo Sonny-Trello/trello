@@ -1,10 +1,10 @@
 package io.superson.trelloproject.domain.user.repository.command;
 
 import io.superson.trelloproject.domain.user.entity.User;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-
-import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -32,5 +32,9 @@ public class UserRepositoryImpl implements UserRepository {
         userJpaRepository.deleteById(userId);
     }
 
+    @Override
+    public List<User> findUsersByEmails(List<String> assigneeEmails) {
+        return userJpaRepository.findAllByEmailIn(assigneeEmails);
+    }
 
 }
