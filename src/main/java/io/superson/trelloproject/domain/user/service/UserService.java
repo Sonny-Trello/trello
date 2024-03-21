@@ -1,13 +1,18 @@
 package io.superson.trelloproject.domain.user.service;
 
+import io.superson.trelloproject.domain.board.entity.Invite.Invite;
 import io.superson.trelloproject.domain.user.dto.LoginRequestDto;
 import io.superson.trelloproject.domain.user.dto.PasswordUpdateRequestDto;
 import io.superson.trelloproject.domain.user.dto.SignUpRequestDto;
+import io.superson.trelloproject.domain.user.dto.UserInviteResponseDto;
 import io.superson.trelloproject.domain.user.dto.UserResponseDto;
 import io.superson.trelloproject.domain.user.entity.User;
 import io.superson.trelloproject.domain.user.repository.command.UserRepository;
+import io.superson.trelloproject.domain.user.repository.query.UserQueryRepository;
+import io.superson.trelloproject.global.exception.UserNotFoundException;
 import io.superson.trelloproject.global.jwt.JwtUtil;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final UserQueryRepository userQueryRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
@@ -47,7 +53,7 @@ public class UserService {
 
     public UserResponseDto getUserInfo(String userId) {
         User foundUser = userRepository.findById(userId).orElseThrow(
-            () -> new IllegalArgumentException("존재하지 않는 유저입니다.")
+            () -> new UserNotFoundException("존재하지 않는 유저입니다.")
         );
         return new UserResponseDto(foundUser);
     }
@@ -55,7 +61,7 @@ public class UserService {
     @Transactional
     public void passwordUpdate(PasswordUpdateRequestDto requestDto, User user) {
         User foundUser = userRepository.findById(user.getUserId()).orElseThrow(
-            () -> new IllegalArgumentException("존재하지 않는 유저입니다.")
+            () -> new UserNotFoundException("존재하지 않는 유저입니다.")
         );
 
         String presentPassword = requestDto.getPresentPassword();
@@ -79,8 +85,14 @@ public class UserService {
     @Transactional
     public void withdraw(String userId) {
         userRepository.findById(userId).orElseThrow(
-            () -> new IllegalArgumentException("존재하지 않는 유저입니다.")
+            () -> new UserNotFoundException("존재하지 않는 유저입니다.")
         );
         userRepository.deleteById(userId);
+    }
+
+    public List<UserInviteResponseDto> getInvitations(User user) {
+        List<Invite> inviteList = userQueryRepository.findAllInviteByUserId(user.getUserId());
+        return inviteList.stream().map(UserInviteResponseDto::new)
+            .toList();
     }
 }
