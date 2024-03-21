@@ -28,4 +28,5 @@ public class StatusRepositoryImpl implements StatusRepository {
         statusJpaRepository.deleteById(statusId);
     }
 
+
 }

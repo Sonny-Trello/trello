@@ -8,6 +8,7 @@ import io.superson.trelloproject.domain.status.dto.StatusRequestDto;
 import io.superson.trelloproject.domain.status.dto.UpdateStatusResponseDto;
 import io.superson.trelloproject.domain.status.entity.Status;
 import io.superson.trelloproject.domain.status.repository.command.StatusRepository;
+import io.superson.trelloproject.domain.status.repository.query.StatusQueryRepository;
 import io.superson.trelloproject.domain.user.entity.User;
 import io.superson.trelloproject.global.exception.UserPermissionException;
 import jakarta.transaction.Transactional;
@@ -26,12 +27,14 @@ public class StatusService {
     private final BoardQueryRepository boardQueryRepository;
     private final BoardRepository boardRepository;
     private final StatusRepository statusRepository;
+    private final StatusQueryRepository statusQueryRepository;
 
     public CreateStatusResponseDto createStatus(User user, Long boardId, StatusRequestDto createStatusRequestDto) {
         validateUserIsBoardMember(user, boardId);
 
         Board board = boardRepository.findById(boardId);
         Status status = Status.builder().name(createStatusRequestDto.getName())
+                .statusNumber((statusQueryRepository.getStatusCount(boardId) + 1) * 65536)
             .board(board).build();
 
         validateBoardId(status, boardId);
@@ -55,6 +58,23 @@ public class StatusService {
         validateBoardId(status, boardId);
 
         statusRepository.deleteById(statusId);
+    }
+
+    public void updateStatusNumber(User user, Long boardId, Long statusId, float previousPositionNumber) {
+        // 이동하려는 status 이전 status float number로 카드 이전 조회
+        // 이 두 카드의 statusNumber로 평균 값 구해서 status에 update
+        Status status = statusRepository.findStatusOrElseThrow(statusId); // 이동할 현재 status
+        Status newPositionOfpreviousStatus = statusQueryRepository.findPreviousStatus(boardId, previousPositionNumber);
+
+        validateBoardId(status, boardId);
+        validateBoardId(newPositionOfpreviousStatus, boardId);
+
+        validateUserIsBoardMember(user, boardId);
+
+        float nextPositionNumber = statusQueryRepository.getNextStatusNumberByStatusId(boardId, previousPositionNumber);
+        float newPositionNumber = (previousPositionNumber + nextPositionNumber) / 2;
+
+        status.updateStatusPosition(newPositionNumber);
     }
 
     private void validateUserIsBoardMember(User user, Long boardId) {

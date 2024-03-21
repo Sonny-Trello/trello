@@ -39,26 +39,38 @@ public class StatusController {
 
     @PutMapping("/{statusId}")
     public ResponseEntity<ResponseDto<UpdateStatusResponseDto>> updateStatus(
-        @AuthenticationPrincipal UserDetailsImpl userDetails,
-        @PathVariable Long boardId, @PathVariable Long statusId,
-        @RequestBody @Valid StatusRequestDto statusRequestDto
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable Long boardId, @PathVariable Long statusId,
+            @RequestBody @Valid StatusRequestDto statusRequestDto
     ) {
         UpdateStatusResponseDto updateStatusResponseDto = statusService.updateStatus(userDetails.getUser(), boardId, statusId, statusRequestDto);
         return ResponseEntity.created(createUri(updateStatusResponseDto.getStatusId()))
-            .body(ResponseDto.<UpdateStatusResponseDto>builder()
-                .data(updateStatusResponseDto)
-                .build());
+                .body(ResponseDto.<UpdateStatusResponseDto>builder()
+                        .data(updateStatusResponseDto)
+                        .build());
+    }
+
+    @PatchMapping("/{statusId}/movement")
+    public ResponseEntity<ResponseDto<Void>> updateStatusNumber(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable Long boardId,
+            @PathVariable Long statusId,
+            float frontPositionNumber
+    ) {
+        statusService.updateStatusNumber(userDetails.getUser(), boardId, statusId, frontPositionNumber);
+        return ResponseEntity.created(createUri(statusId))
+                .body(ResponseDto.<Void>builder().build());
     }
 
     @DeleteMapping("/{statusId}")
     public ResponseEntity<ResponseDto<Void>> deleteStatus(
-        @AuthenticationPrincipal UserDetailsImpl userDetails,
-        @PathVariable Long boardId,
-        @PathVariable Long statusId
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable Long boardId,
+            @PathVariable Long statusId
     ) {
         statusService.deleteStatus(userDetails.getUser(), boardId, statusId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
-            .body(ResponseDto.<Void>builder().build());
+                .body(ResponseDto.<Void>builder().build());
     }
 
     private URI createUri(Long statusId) {

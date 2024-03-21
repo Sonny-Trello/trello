@@ -24,6 +24,9 @@ public class Status extends Timestamped {
     @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
+    private float statusNumber;
+
     @ManyToOne
     @JoinColumn(name = "board_id")
     private Board board;
@@ -35,5 +38,9 @@ public class Status extends Timestamped {
 
     public void updateStatus(StatusRequestDto statusRequestDto) {
         this.name = statusRequestDto.getName();
+    }
+
+    public void updateStatusPosition(float newPositionNumber) {
+        this.statusNumber = newPositionNumber;
     }
 }
