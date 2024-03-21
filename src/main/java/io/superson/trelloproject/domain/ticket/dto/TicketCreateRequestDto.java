@@ -7,7 +7,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.springframework.format.annotation.DateTimeFormat;
 
 @Getter
 @AllArgsConstructor
@@ -18,7 +17,6 @@ public class TicketCreateRequestDto {
     private String description;
     @EnumSubsetOf(enumClass = Color.class)
     private String color;
-    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime deadline;
     private List<String> assigneeEmails;
 

@@ -38,11 +38,11 @@ public class TicketRepositoryImpl implements TicketRepository {
 
     @Override
     public Ticket update(
-        Long boardId, Long ticketId, TicketCreateRequestDto requestDto, List<Assignee> assignees
+        Long boardId, Long ticketId, TicketCreateRequestDto requestDto
     ) {
         Ticket ticket = getOrElseThrow(boardId, ticketId);
 
-        ticket.update(requestDto, assignees);
+        ticket.update(requestDto);
 
         return repository.saveAndFlush(ticket);
     }

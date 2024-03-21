@@ -21,7 +21,6 @@ import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,7 +29,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
-@Setter(AccessLevel.PROTECTED)
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
@@ -62,12 +60,26 @@ public class Ticket extends Timestamped {
     @OneToMany(mappedBy = "ticket", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Assignee> assignees = new ArrayList<>();
 
-    public void update(TicketCreateRequestDto requestDto, List<Assignee> assignees) {
-        Optional.ofNullable(requestDto.getName()).ifPresent(this::setName);
-        Optional.ofNullable(requestDto.getDescription()).ifPresent(this::setDescription);
-        Optional.ofNullable(requestDto.getColor()).ifPresent(c -> setColor(Color.valueOf(c)));
-        Optional.ofNullable(requestDto.getDeadline()).ifPresent(this::setDeadline);
-        this.assignees = assignees;
+    public void update(TicketCreateRequestDto requestDto) {
+        String targetName = requestDto.getName();
+        if (targetName != null) {
+            this.name = targetName;
+        }
+
+        String targetDescription = requestDto.getDescription();
+        if (targetDescription != null) {
+            this.description = targetDescription;
+        }
+
+        String targetColor = requestDto.getColor();
+        if (targetColor != null) {
+            this.color = Color.valueOf(targetColor);
+        }
+
+        LocalDateTime requestDtoDeadline = requestDto.getDeadline();
+        if (requestDtoDeadline != null) {
+            this.deadline = requestDtoDeadline;
+        }
     }
 
     public void setParents(Board board, Status status) {

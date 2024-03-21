@@ -57,11 +57,7 @@ public class TicketService {
     ) {
         validateUserAccess(boardId, userId);
 
-        List<Assignee> assignees = userRepository.findUsersByEmails(requestDto.getAssigneeEmails())
-            .stream()
-            .map(Assignee::new)
-            .toList();
-        Ticket updatedTicket = ticketRepository.update(boardId, ticketId, requestDto, assignees);
+        Ticket updatedTicket = ticketRepository.update(boardId, ticketId, requestDto);
 
         return TicketMapper.toTicketResponseDto(updatedTicket);
     }
@@ -84,9 +80,8 @@ public class TicketService {
     }
 
     private UserBoard validateUserAccess(Long boardId, String userId) {
-        return ticketRepository.validateUserAccess(boardId, userId).orElseThrow(
-            () -> new IllegalArgumentException("User not found")
-        );
+        return ticketRepository.validateUserAccess(boardId, userId)
+            .orElseThrow(() -> new IllegalArgumentException("User not found"));
     }
 
 }

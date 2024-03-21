@@ -19,8 +19,7 @@ public interface TicketRepository {
     Ticket update(
         Long boardId,
         Long ticketId,
-        TicketCreateRequestDto requestDto,
-        List<Assignee> assignees
+        TicketCreateRequestDto requestDto
     );
 
     Ticket updateStatus(Long boardId, Long ticketId, Status status);
