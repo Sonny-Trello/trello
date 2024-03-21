@@ -13,8 +13,6 @@ public interface TicketRepository {
 
     Ticket save(Ticket ticket, Board board, Status status, List<Assignee> assignees);
 
-    Optional<Ticket> findByBoardIdAndTicketId(Long boardId, Long ticketId);
-
     Optional<TicketDetailsResponseDto> findTicketDetailsById(Long boardId, Long ticketId);
 
     Ticket update(
@@ -25,5 +23,7 @@ public interface TicketRepository {
     );
 
     Ticket updateStatus(Long boardId, Long ticketId, Status status);
+
+    void deleteById(Long boardId, Long ticketId);
 
 }

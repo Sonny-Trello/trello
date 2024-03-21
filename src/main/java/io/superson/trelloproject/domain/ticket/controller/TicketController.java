@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -94,6 +95,17 @@ public class TicketController {
         );
 
         return ResponseEntity.ok(ResponseDto.of(responseDto));
+    }
+
+    @DeleteMapping("/tickets/{ticketId}")
+    public ResponseEntity<ResponseDto<Void>> deleteTicket(
+        final @PathVariable @Positive Long boardId,
+        final @PathVariable @Positive Long ticketId,
+        final @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        ticketService.deleteTicket(boardId, ticketId, userDetails.getUser().getUserId());
+
+        return ResponseEntity.ok().build();
     }
 
     private URI createUri(Long ticketId) {

@@ -25,12 +25,7 @@ public class TicketRepositoryImpl implements TicketRepository {
         ticket.setParents(board, status);
         ticket.addAssignees(assignees);
 
-        return repository.save(ticket);
-    }
-
-    @Override
-    public Optional<Ticket> findByBoardIdAndTicketId(Long boardId, Long ticketId) {
-        return repository.findByBoardIdAndTicketId(boardId, ticketId);
+        return repository.saveAndFlush(ticket);
     }
 
     @Override
@@ -44,8 +39,7 @@ public class TicketRepositoryImpl implements TicketRepository {
     public Ticket update(
         Long boardId, Long ticketId, TicketCreateRequestDto requestDto, List<Assignee> assignees
     ) {
-        Ticket ticket = repository.findByBoardIdAndTicketId(boardId, ticketId)
-            .orElseThrow(() -> new EntityNotFoundException("Ticket not found"));
+        Ticket ticket = getOrElseThrow(boardId, ticketId);
 
         ticket.update(requestDto, assignees);
 
@@ -54,12 +48,23 @@ public class TicketRepositoryImpl implements TicketRepository {
 
     @Override
     public Ticket updateStatus(Long boardId, Long ticketId, Status status) {
-        Ticket ticket = repository.findByBoardIdAndTicketId(boardId, ticketId)
-            .orElseThrow(() -> new EntityNotFoundException("Ticket not found"));
+        Ticket ticket = getOrElseThrow(boardId, ticketId);
 
         ticket.setStatus(status);
 
         return repository.saveAndFlush(ticket);
+    }
+
+    @Override
+    public void deleteById(Long boardId, Long ticketId) {
+        Ticket ticket = getOrElseThrow(boardId, ticketId);
+
+        repository.delete(ticket);
+    }
+
+    private Ticket getOrElseThrow(Long boardId, Long ticketId) {
+        return repository.findByBoardIdAndTicketId(boardId, ticketId)
+            .orElseThrow(() -> new EntityNotFoundException("Ticket not found"));
     }
 
 }

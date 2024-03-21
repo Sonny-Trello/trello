@@ -34,7 +34,7 @@ public class TicketService {
         final String userId
     ) {
         Board board = validateBoard(boardId);
-        User user = validateUserAccess(boardId, userId);
+        validateUserAccess(boardId, userId);
         Status status = statusRepository.findStatusOrElseThrow(statusId);
 
         List<Assignee> assignees = userRepository.findUsersByEmails(requestDto.getAssigneeEmails())
@@ -48,6 +48,8 @@ public class TicketService {
 
     @Transactional(readOnly = true)
     public TicketDetailsResponseDto findTicketDetails(Long boardId, Long ticketId, String userId) {
+        validateUserAccess(boardId, userId);
+
         return ticketRepository.findTicketDetailsById(boardId, ticketId)
             .orElseThrow(() -> new EntityNotFoundException("Ticket not found"));
     }
@@ -69,7 +71,7 @@ public class TicketService {
     public TicketResponseDto updateStatus(
         Long boardId, Long ticketId, Long statusId, String userId
     ) {
-        User user = validateUserAccess(boardId, userId);
+        validateUserAccess(boardId, userId);
         Status status = statusRepository.findStatusOrElseThrow(statusId);
 
         Ticket updatedTicket = ticketRepository.updateStatus(boardId, ticketId, status);
@@ -77,13 +79,19 @@ public class TicketService {
         return TicketMapper.toTicketResponseDto(updatedTicket);
     }
 
-    private Board validateBoard(Long boardId) throws EntityNotFoundException {
+    public void deleteTicket(Long boardId, Long ticketId, String userId) {
+        validateUserAccess(boardId, userId);
+
+        ticketRepository.deleteById(boardId, ticketId);
+    }
+
+    private Board validateBoard(Long boardId) {
         // TODO: Implement
 
         return null;
     }
 
-    private User validateUserAccess(Long boardId, String userId) throws EntityNotFoundException {
+    private User validateUserAccess(Long boardId, String userId) {
         // TODO: Implement
 
         return null;
