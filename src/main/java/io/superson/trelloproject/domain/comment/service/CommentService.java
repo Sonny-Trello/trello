@@ -9,6 +9,7 @@ import io.superson.trelloproject.domain.ticket.entity.Ticket;
 import io.superson.trelloproject.domain.ticket.repository.TicketQuerydslJpaRepository;
 import io.superson.trelloproject.domain.user.entity.User;
 import io.superson.trelloproject.domain.user.repository.query.UserQueryRepository;
+import io.superson.trelloproject.global.exception.UserNotFoundException;
 import io.superson.trelloproject.global.exception.UserPermissionException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
 @Service
 @Transactional
@@ -41,6 +43,7 @@ public class CommentService {
     }
 
     public CommentResponseDto updateComment(User user, Long boardId, Long ticketId, Long commentId, CommentRequestDto commentRequestDto) {
+        System.out.println(user);
         validateBoardWithTicket(boardId, ticketId);
         validateUserIsBoardMember(user, boardId);
 
@@ -75,8 +78,10 @@ public class CommentService {
         }
     }
 
-    private void validateCommentAuthor(User user, Long commentId) {
-        if (!userQueryRepository.findByUserAndComment(user.getUserId(), commentId).getUserId().equals(user.getUserId())) {
+    private void validateCommentAuthor(User user, Long commentId) {//user -> 댓글 지우기 시도하는 사람 = 로그인 한 사람 // commentId -> 지우려는 comment
+        User confirmUser = userQueryRepository.findByUserAndComment(commentId)
+                .orElseThrow(() -> new UserNotFoundException("존재하지 않는 회원입니다."));
+        if (!Objects.equals(confirmUser.getUserId(), user.getUserId())) {
             throw new UserPermissionException("해당 댓글의 작성자에게 권한이 있습니다.");
         }
     }

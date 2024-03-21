@@ -30,12 +30,12 @@ public class UserQueryRepositoryImpl implements UserQueryRepository {
     }
 
     @Override
-    public User findByUserAndComment(String userId, Long commentId) {
-        return jpaQueryFactory.select(user)
+    public Optional<User> findByUserAndComment(Long commentId) {
+        return Optional.ofNullable(jpaQueryFactory.select(user)
                 .from(user)
-                .join(comment).on(comment.user.userId.eq(userId))
+                .join(comment).on(comment.user.userId.eq(user.userId))
                 .where(comment.commentId.eq(commentId))
-                .fetchOne();
+                .fetchOne());
     }
 }
 

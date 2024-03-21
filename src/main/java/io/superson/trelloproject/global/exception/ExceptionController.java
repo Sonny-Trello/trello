@@ -1,17 +1,18 @@
 package io.superson.trelloproject.global.exception;
 
 import io.superson.trelloproject.domain.common.dto.ExceptionDto;
-import java.util.NoSuchElementException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.NoSuchElementException;
+
 @RestControllerAdvice
 public class ExceptionController {
 
-    @ExceptionHandler(IllegalArgumentException.class)
+    @ExceptionHandler({IllegalArgumentException.class, UserPermissionException.class})
     public ResponseEntity<ExceptionDto> handBadRequestException(Exception e) {
         return createResponse(HttpStatus.BAD_REQUEST, e.getMessage());
     }
