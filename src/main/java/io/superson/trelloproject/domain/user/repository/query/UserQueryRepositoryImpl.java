@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import static io.superson.trelloproject.domain.board.entity.Invite.QInvite.invite;
 import static io.superson.trelloproject.domain.comment.entity.QComment.comment;

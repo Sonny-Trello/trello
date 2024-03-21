@@ -10,5 +10,5 @@ public interface UserQueryRepository {
 
     List<Invite> findAllInviteByUserId(String userId);
 
-    User findByUserAndComment(String userId, Long commentId);
+    Optional<User> findByUserAndComment(Long commentId);
 }
