@@ -2,45 +2,70 @@ package io.superson.trelloproject.domain.comment.service;
 
 import io.superson.trelloproject.domain.board.repository.query.BoardQueryRepository;
 import io.superson.trelloproject.domain.comment.dto.CommentRequestDto;
+import io.superson.trelloproject.domain.comment.dto.CommentResponseDto;
 import io.superson.trelloproject.domain.comment.entity.Comment;
 import io.superson.trelloproject.domain.comment.repository.command.CommentRepository;
+import io.superson.trelloproject.domain.ticket.entity.Ticket;
+import io.superson.trelloproject.domain.ticket.repository.TicketQuerydslJpaRepository;
 import io.superson.trelloproject.domain.user.entity.User;
 import io.superson.trelloproject.domain.user.repository.query.UserQueryRepository;
 import io.superson.trelloproject.global.exception.UserPermissionException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class CommentService {
 
     private final BoardQueryRepository boardQueryRepository;
     private final CommentRepository commentRepository;
+    private final TicketQuerydslJpaRepository ticketQuerydslJpaRepository;
     private final UserQueryRepository userQueryRepository;
 
-    public void createComment(User user, Long boardId, Long ticketId, CommentRequestDto commentRequestDto) {
+    public CommentResponseDto createComment(User user, Long boardId, Long ticketId, CommentRequestDto commentRequestDto) {
+        validateBoardWithTicket(boardId, ticketId);
         validateUserIsBoardMember(user, boardId);
+
+        Ticket ticket = ticketQuerydslJpaRepository.findTicketByBoardIdAndTicketId(boardId, ticketId);
         Comment comment = Comment.builder()
                 .content(commentRequestDto.getContent())
                 .user(user)
+                .ticket(ticket)
                 .build();
-        commentRepository.save(user, comment);
+        return new CommentResponseDto(commentRepository.save(user, comment));
     }
 
-    public void updateComment(User user, Long boardId, Long ticketId, Long commentId, CommentRequestDto commentRequestDto) {
+    public CommentResponseDto updateComment(User user, Long boardId, Long ticketId, Long commentId, CommentRequestDto commentRequestDto) {
+        validateBoardWithTicket(boardId, ticketId);
         validateUserIsBoardMember(user, boardId);
+
         Comment comment = commentRepository.findCommentOrElseThrow(commentId);
         validateCommentAuthor(user, commentId);
+
         comment.updateComment(commentRequestDto);
+        return new CommentResponseDto(comment);
     }
 
     public void deleteComment(User user, Long boardId, Long ticketId, Long commentId) {
+        validateBoardWithTicket(boardId, ticketId);
         validateUserIsBoardMember(user, boardId);
+
         Comment comment = commentRepository.findCommentOrElseThrow(commentId);
         validateCommentAuthor(user, commentId);
+
         commentRepository.deleteComment(comment);
+    }
+
+    private void validateBoardWithTicket(Long boardId, Long ticketId) {
+        Ticket confirmTicket = ticketQuerydslJpaRepository.findTicketByBoardIdAndTicketId(boardId, ticketId);
+        if (confirmTicket == null) {
+            throw new NoSuchElementException("해당 티켓은 존재하지 않습니다.");
+        }
     }
 
     private void validateUserIsBoardMember(User user, Long boardId) {
@@ -51,7 +76,7 @@ public class CommentService {
     }
 
     private void validateCommentAuthor(User user, Long commentId) {
-        if (!userQueryRepository.findByUserAndComment(user.getUserId(), commentId).equals(user)) {
+        if (!userQueryRepository.findByUserAndComment(user.getUserId(), commentId).getUserId().equals(user.getUserId())) {
             throw new UserPermissionException("해당 댓글의 작성자에게 권한이 있습니다.");
         }
     }
