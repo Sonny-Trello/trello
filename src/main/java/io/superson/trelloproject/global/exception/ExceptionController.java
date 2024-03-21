@@ -12,12 +12,13 @@ import java.util.NoSuchElementException;
 @RestControllerAdvice
 public class ExceptionController {
 
-    @ExceptionHandler(IllegalArgumentException.class)
+    @ExceptionHandler({IllegalArgumentException.class, UserPermissionException.class})
     public ResponseEntity<ExceptionDto> handBadRequestException(Exception e) {
         return createResponse(HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
-    @ExceptionHandler({NullPointerException.class, NoSuchElementException.class})
+    @ExceptionHandler({NullPointerException.class, NoSuchElementException.class,
+        UserNotFoundException.class})
     public ResponseEntity<ExceptionDto> handleNotFoundException(Exception ex) {
         return createResponse(HttpStatus.NOT_FOUND, ex.getMessage());
     }
@@ -26,7 +27,8 @@ public class ExceptionController {
     public ResponseEntity<ExceptionDto> handleMethodArgumentNotValidException(
         MethodArgumentNotValidException e
     ) {
-        return createResponse(HttpStatus.BAD_REQUEST, e.getBindingResult().getFieldError().getDefaultMessage());
+        return createResponse(HttpStatus.BAD_REQUEST,
+            e.getBindingResult().getFieldError().getDefaultMessage());
     }
 
     private ResponseEntity<ExceptionDto> createResponse(HttpStatus status, String message) {
