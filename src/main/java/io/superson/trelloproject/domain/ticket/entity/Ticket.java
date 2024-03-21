@@ -54,7 +54,7 @@ public class Ticket extends Timestamped {
 
     @Setter
     @Column(nullable = false)
-    private Float position;
+    private Double position;
 
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)

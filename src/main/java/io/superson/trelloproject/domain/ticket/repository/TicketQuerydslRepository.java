@@ -18,13 +18,13 @@ public interface TicketQuerydslRepository {
 
     List<User> findUsersInBoardByEmails(Long boardId, List<String> assigneeEmails);
 
-    List<Float> findPreviousAndNextTicketPositions(Long statusId, Long previousTicketId);
+    List<Double> findPreviousAndNextTicketPositions(Long statusId, Long previousTicketId);
 
     List<Assignee> findAssigneesInTicketByEmails(Long boardId, Long ticketId, List<String> emails);
 
-    Float findMaxPosition(Long statusId);
+    Double findMaxPosition(Long statusId);
 
-    Float findMinPosition(Long statusId);
+    Double findMinPosition(Long statusId);
 
     Ticket findTicketByBoardIdAndTicketId(Long boardId, Long ticketId);
 

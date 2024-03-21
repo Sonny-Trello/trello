@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class TicketService {
 
-    private static final Float POSITION_INCREMENT = 4294967296F; // 2 ^ 32
+    private static final Double POSITION_INCREMENT = 65536D; // 2 ^ 16
 
     private final TicketRepository ticketRepository;
     private final StatusRepository statusRepository;
@@ -69,7 +69,7 @@ public class TicketService {
     ) {
         validateUserAccess(boardId, userId);
         Status status = statusRepository.findStatusOrElseThrow(statusId);
-        Float position = calculatePosition(statusId, previousTicketId);
+        Double position = calculatePosition(statusId, previousTicketId);
 
         Ticket updatedTicket = ticketRepository.updateStatus(boardId, ticketId, status, position);
 
@@ -122,14 +122,14 @@ public class TicketService {
             .orElseThrow(() -> new EntityNotFoundException("User not found"));
     }
 
-    private Float calculatePosition(Long statusId, Long previousTicketId) {
+    private Double calculatePosition(Long statusId, Long previousTicketId) {
         if (previousTicketId == null) {
-            Float minPosition = ticketRepository.findMinPositionByStatusId(statusId);
+            Double minPosition = ticketRepository.findMinPositionByStatusId(statusId);
 
-            return (minPosition == null) ? POSITION_INCREMENT : Float.valueOf(minPosition / 2);
+            return (minPosition == null) ? POSITION_INCREMENT : Double.valueOf(minPosition / 2);
         }
 
-        List<Float> positions = ticketRepository.findPreviousAndNextTicketPositions(statusId, previousTicketId);
+        List<Double> positions = ticketRepository.findPreviousAndNextTicketPositions(statusId, previousTicketId);
         if (positions.size() == 1) {
             return positions.get(0) + POSITION_INCREMENT;
         } else if (positions.size() == 2) {

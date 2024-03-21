@@ -93,8 +93,8 @@ public class TicketQuerydslRepositoryImpl implements TicketQuerydslRepository {
     }
 
     @Override
-    public List<Float> findPreviousAndNextTicketPositions(Long statusId, Long previousTicketId) {
-        JPQLQuery<Float> previousTicketPosition = JPAExpressions.select(ticket.position)
+    public List<Double> findPreviousAndNextTicketPositions(Long statusId, Long previousTicketId) {
+        JPQLQuery<Double> previousTicketPosition = JPAExpressions.select(ticket.position)
             .from(ticket)
             .where(ticket.ticketId.eq(previousTicketId));
 
@@ -124,22 +124,24 @@ public class TicketQuerydslRepositoryImpl implements TicketQuerydslRepository {
     }
 
     @Override
-    public Float findMinPosition(Long statusId) {
-        return queryFactory.select(ticket.position.min())
+    public Double findMinPosition(Long statusId) {
+        Double result = queryFactory.select(ticket.position.min())
             .from(ticket)
             .where(ticket.status.statusId.eq(statusId))
             .fetchOne();
+
+        return Objects.requireNonNullElse(result, 0d);
     }
 
     @Nullable
     @Override
-    public Float findMaxPosition(Long statusId) {
-        Float result = queryFactory.select(ticket.position.max())
+    public Double findMaxPosition(Long statusId) {
+        Double result = queryFactory.select(ticket.position.max())
             .from(ticket)
             .where(ticket.status.statusId.eq(statusId))
             .fetchOne();
 
-        return Objects.requireNonNullElse(result, 0f);
+        return Objects.requireNonNullElse(result, 0d);
     }
 
 }

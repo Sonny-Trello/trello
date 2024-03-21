@@ -18,5 +18,6 @@ public class TicketResponseDto {
     private Color color;
     private String description;
     private LocalDateTime deadline;
+    private Double position;
 
 }

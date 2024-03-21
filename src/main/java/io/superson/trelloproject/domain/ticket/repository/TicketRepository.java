@@ -19,9 +19,9 @@ public interface TicketRepository {
 
     Optional<TicketDetailsResponseDto> findTicketDetailsById(Long boardId, Long ticketId);
 
-    Float findMinPositionByStatusId(Long statusId);
+    Double findMinPositionByStatusId(Long statusId);
 
-    List<Float> findPreviousAndNextTicketPositions(Long statusId, Long previousTicketId);
+    List<Double> findPreviousAndNextTicketPositions(Long statusId, Long previousTicketId);
 
     List<User> findUsersInBoardByEmails(Long boardId, List<String> assigneeEmails);
 
@@ -29,7 +29,7 @@ public interface TicketRepository {
 
     Ticket update(Long boardId, Long ticketId, TicketCreateRequestDto requestDto);
 
-    Ticket updateStatus(Long boardId, Long ticketId, Status status, Float position);
+    Ticket updateStatus(Long boardId, Long ticketId, Status status, Double position);
 
     void deleteById(Long boardId, Long ticketId);
 
