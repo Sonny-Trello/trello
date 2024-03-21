@@ -10,10 +10,10 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
-/*
-    임시로 만들어둔 엔티티입니다.
-    컨플릭트 발생시 `9noeyni9`님의 코드로 변경해주세요.
-     */
+
+/**
+ * 임시로 만들어 둔 엔티티입니다. 컨플릭트 발생 시 `9noeyni9`님의 코드로 변경해주세요.
+ */
 @Entity
 @Table(name = "tb_comment")
 public class Comment extends Timestamped {
