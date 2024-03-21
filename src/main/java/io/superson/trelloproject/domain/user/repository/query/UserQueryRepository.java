@@ -1,13 +1,9 @@
 package io.superson.trelloproject.domain.user.repository.query;
 
-import com.querydsl.jpa.impl.JPAQueryFactory;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
+import io.superson.trelloproject.domain.board.entity.Invite.Invite;
+import java.util.List;
 
-@Repository
-@RequiredArgsConstructor
-public class UserQueryRepository {
+public interface UserQueryRepository {
 
-    private final JPAQueryFactory jpaQueryFactory;
+    List<Invite> findAllByUserId(String userId);
 }
-

@@ -4,10 +4,12 @@ import io.superson.trelloproject.domain.common.dto.ResponseDto;
 import io.superson.trelloproject.domain.user.dto.LoginRequestDto;
 import io.superson.trelloproject.domain.user.dto.PasswordUpdateRequestDto;
 import io.superson.trelloproject.domain.user.dto.SignUpRequestDto;
+import io.superson.trelloproject.domain.user.dto.UserInviteResponseDto;
 import io.superson.trelloproject.domain.user.dto.UserResponseDto;
 import io.superson.trelloproject.domain.user.service.UserService;
 import io.superson.trelloproject.global.impl.UserDetailsImpl;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -79,5 +81,16 @@ public class UserController {
     ) {
         userService.withdraw(userDetails.getUser().getUserId());
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/invites")
+    public ResponseEntity<ResponseDto<List<UserInviteResponseDto>>> getInvitations(
+        @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        List<UserInviteResponseDto> inviteList = userService.getInvitations(userDetails.getUser());
+        return ResponseEntity.ok().body(
+            ResponseDto.<List<UserInviteResponseDto>>builder()
+                .data(inviteList)
+                .build());
     }
 }
