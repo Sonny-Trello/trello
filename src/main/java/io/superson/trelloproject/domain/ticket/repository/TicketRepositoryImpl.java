@@ -1,6 +1,7 @@
 package io.superson.trelloproject.domain.ticket.repository;
 
 import io.superson.trelloproject.domain.board.entity.Board;
+import io.superson.trelloproject.domain.board.entity.UserBoard;
 import io.superson.trelloproject.domain.status.entity.Status;
 import io.superson.trelloproject.domain.ticket.dto.TicketCreateRequestDto;
 import io.superson.trelloproject.domain.ticket.dto.TicketDetailsResponseDto;
@@ -60,6 +61,11 @@ public class TicketRepositoryImpl implements TicketRepository {
         Ticket ticket = getOrElseThrow(boardId, ticketId);
 
         repository.delete(ticket);
+    }
+
+    @Override
+    public Optional<UserBoard> validateUserAccess(Long boardId, String userId) {
+        return repository.findByBoardIdAndUserId(boardId, userId);
     }
 
     private Ticket getOrElseThrow(Long boardId, Long ticketId) {

@@ -1,10 +1,12 @@
 package io.superson.trelloproject.domain.ticket.repository;
 
+import static io.superson.trelloproject.domain.board.entity.QUserBoard.userBoard;
 import static io.superson.trelloproject.domain.comment.entity.QComment.comment;
 import static io.superson.trelloproject.domain.ticket.entity.QAssignee.assignee;
 import static io.superson.trelloproject.domain.ticket.entity.QTicket.ticket;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import io.superson.trelloproject.domain.board.entity.UserBoard;
 import io.superson.trelloproject.domain.ticket.entity.Ticket;
 import io.superson.trelloproject.domain.ticket.repository.vo.AssigneeVo;
 import io.superson.trelloproject.domain.ticket.repository.vo.CommentVo;
@@ -59,6 +61,15 @@ public class TicketQuerydslRepositoryImpl implements TicketQuerydslRepository {
         ticketWithComments.setAssignees(assignees);
 
         return Optional.of(ticketWithComments);
+    }
+
+    @Override
+    public Optional<UserBoard> findByBoardIdAndUserId(Long boardId, String userId) {
+        return Optional.ofNullable(queryFactory
+            .selectFrom(userBoard)
+            .where(userBoard.board.boardId.eq(boardId),
+                userBoard.user.userId.eq(userId))
+            .fetchOne());
     }
 
 }

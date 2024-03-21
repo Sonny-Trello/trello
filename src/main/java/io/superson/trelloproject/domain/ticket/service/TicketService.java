@@ -1,6 +1,6 @@
 package io.superson.trelloproject.domain.ticket.service;
 
-import io.superson.trelloproject.domain.board.entity.Board;
+import io.superson.trelloproject.domain.board.entity.UserBoard;
 import io.superson.trelloproject.domain.status.entity.Status;
 import io.superson.trelloproject.domain.status.repository.command.StatusRepository;
 import io.superson.trelloproject.domain.ticket.dto.TicketCreateRequestDto;
@@ -10,7 +10,6 @@ import io.superson.trelloproject.domain.ticket.entity.Assignee;
 import io.superson.trelloproject.domain.ticket.entity.Ticket;
 import io.superson.trelloproject.domain.ticket.mapper.TicketMapper;
 import io.superson.trelloproject.domain.ticket.repository.TicketRepository;
-import io.superson.trelloproject.domain.user.entity.User;
 import io.superson.trelloproject.domain.user.repository.command.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
@@ -33,15 +32,14 @@ public class TicketService {
         final TicketCreateRequestDto requestDto,
         final String userId
     ) {
-        Board board = validateBoard(boardId);
-        validateUserAccess(boardId, userId);
+        UserBoard userBoard = validateUserAccess(boardId, userId);
         Status status = statusRepository.findStatusOrElseThrow(statusId);
 
         List<Assignee> assignees = userRepository.findUsersByEmails(requestDto.getAssigneeEmails())
             .stream()
             .map(Assignee::new)
             .toList();
-        Ticket savedTicket = ticketRepository.save(TicketMapper.toEntity(requestDto), board, status, assignees);
+        Ticket savedTicket = ticketRepository.save(TicketMapper.toEntity(requestDto), userBoard.getBoard(), status, assignees);
 
         return TicketMapper.toTicketResponseDto(savedTicket);
     }
@@ -85,16 +83,10 @@ public class TicketService {
         ticketRepository.deleteById(boardId, ticketId);
     }
 
-    private Board validateBoard(Long boardId) {
-        // TODO: Implement
-
-        return null;
-    }
-
-    private User validateUserAccess(Long boardId, String userId) {
-        // TODO: Implement
-
-        return null;
+    private UserBoard validateUserAccess(Long boardId, String userId) {
+        return ticketRepository.validateUserAccess(boardId, userId).orElseThrow(
+            () -> new IllegalArgumentException("User not found")
+        );
     }
 
 }

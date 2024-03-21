@@ -1,6 +1,7 @@
 package io.superson.trelloproject.domain.ticket.repository;
 
 import io.superson.trelloproject.domain.board.entity.Board;
+import io.superson.trelloproject.domain.board.entity.UserBoard;
 import io.superson.trelloproject.domain.status.entity.Status;
 import io.superson.trelloproject.domain.ticket.dto.TicketCreateRequestDto;
 import io.superson.trelloproject.domain.ticket.dto.TicketDetailsResponseDto;
@@ -25,5 +26,7 @@ public interface TicketRepository {
     Ticket updateStatus(Long boardId, Long ticketId, Status status);
 
     void deleteById(Long boardId, Long ticketId);
+
+    Optional<UserBoard> validateUserAccess(Long boardId, String userId);
 
 }
