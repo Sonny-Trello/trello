@@ -1,8 +1,10 @@
 package io.superson.trelloproject.domain.ticket.repository;
 
 import io.superson.trelloproject.domain.board.entity.UserBoard;
+import io.superson.trelloproject.domain.ticket.entity.Assignee;
 import io.superson.trelloproject.domain.ticket.entity.Ticket;
 import io.superson.trelloproject.domain.ticket.repository.vo.TicketDetailsVo;
+import io.superson.trelloproject.domain.user.entity.User;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,7 +16,11 @@ public interface TicketQuerydslRepository {
 
     Optional<UserBoard> findByBoardIdAndUserId(Long boardId, String userId);
 
+    List<User> findUsersInBoardByEmails(Long boardId, List<String> assigneeEmails);
+
     List<Float> findPreviousAndNextTicketPositions(Long statusId, Long previousTicketId);
+
+    List<Assignee> findAssigneesInTicketByEmails(Long boardId, Long ticketId, List<String> emails);
 
     Float findMaxPosition(Long statusId);
 

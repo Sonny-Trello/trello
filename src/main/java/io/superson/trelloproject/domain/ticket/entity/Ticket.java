@@ -104,4 +104,13 @@ public class Ticket extends Timestamped {
         assignees.forEach(this::addAssignee);
     }
 
+    public void deleteAssignee(Assignee assignee) {
+        assignees.remove(assignee);
+        assignee.removeTicket();
+    }
+
+    public void deleteAssignees(List<Assignee> assignees) {
+        assignees.forEach(this::deleteAssignee);
+    }
+
 }

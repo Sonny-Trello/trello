@@ -1,6 +1,7 @@
 package io.superson.trelloproject.domain.ticket.controller;
 
 import io.superson.trelloproject.domain.common.dto.ResponseDto;
+import io.superson.trelloproject.domain.ticket.dto.TicketAssigneeRequestDto;
 import io.superson.trelloproject.domain.ticket.dto.TicketCreateRequestDto;
 import io.superson.trelloproject.domain.ticket.dto.TicketDetailsResponseDto;
 import io.superson.trelloproject.domain.ticket.dto.TicketResponseDto;
@@ -98,6 +99,38 @@ public class TicketController {
         );
 
         return ResponseEntity.ok(ResponseDto.of(responseDto));
+    }
+
+    @PostMapping("/tickets/{ticketId}/assignees")
+    public ResponseEntity<ResponseDto<TicketResponseDto>> addAssignees(
+        final @PathVariable @Positive Long boardId,
+        final @PathVariable @Positive Long ticketId,
+        final @RequestBody @Validated TicketAssigneeRequestDto requestDto,
+        final @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        TicketResponseDto ticketResponseDto = ticketService.addAssignees(
+            boardId,
+            ticketId,
+            requestDto.getAssigneeEmails(),
+            userDetails.getUser().getUserId());
+
+        return ResponseEntity.ok(ResponseDto.of(ticketResponseDto));
+    }
+
+    @DeleteMapping("/tickets/{ticketId}/assignees")
+    public ResponseEntity<ResponseDto<TicketResponseDto>> deleteAssignees(
+        final @PathVariable @Positive Long boardId,
+        final @PathVariable @Positive Long ticketId,
+        final @RequestBody @Validated TicketAssigneeRequestDto requestDto,
+        final @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        TicketResponseDto ticketResponseDto = ticketService.deleteAssignees(
+            boardId,
+            ticketId,
+            requestDto.getAssigneeEmails(),
+            userDetails.getUser().getUserId());
+
+        return ResponseEntity.ok(ResponseDto.of(ticketResponseDto));
     }
 
     @DeleteMapping("/tickets/{ticketId}")

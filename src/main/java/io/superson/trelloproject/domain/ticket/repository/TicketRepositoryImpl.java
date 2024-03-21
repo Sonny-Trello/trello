@@ -9,6 +9,7 @@ import io.superson.trelloproject.domain.ticket.entity.Assignee;
 import io.superson.trelloproject.domain.ticket.entity.Ticket;
 import io.superson.trelloproject.domain.ticket.mapper.TicketMapper;
 import io.superson.trelloproject.domain.ticket.repository.vo.TicketDetailsVo;
+import io.superson.trelloproject.domain.user.entity.User;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
@@ -52,10 +53,23 @@ public class TicketRepositoryImpl implements TicketRepository {
     }
 
     @Override
+    public List<User> findUsersInBoardByEmails(Long boardId, List<String> assigneeEmails) {
+        return repository.findUsersInBoardByEmails(boardId, assigneeEmails);
+    }
+
+    public List<Assignee> findAssigneesInTicketByEmails(
+        Long boardId,
+        Long ticketId,
+        List<String> emails
+    ) {
+        return repository.findAssigneesInTicketByEmails(boardId, ticketId, emails);
+    }
+
+    @Override
     public Ticket update(
         Long boardId, Long ticketId, TicketCreateRequestDto requestDto
     ) {
-        Ticket ticket = getOrElseThrow(boardId, ticketId);
+        Ticket ticket = findOrElseThrow(boardId, ticketId);
 
         ticket.update(requestDto);
 
@@ -64,7 +78,7 @@ public class TicketRepositoryImpl implements TicketRepository {
 
     @Override
     public Ticket updateStatus(Long boardId, Long ticketId, Status status, Float position) {
-        Ticket ticket = getOrElseThrow(boardId, ticketId);
+        Ticket ticket = findOrElseThrow(boardId, ticketId);
 
         ticket.setStatus(status);
         ticket.setPosition(position);
@@ -73,8 +87,24 @@ public class TicketRepositoryImpl implements TicketRepository {
     }
 
     @Override
+    public Ticket addAssignees(Long boardId, Long ticketId, List<Assignee> assignees) {
+        Ticket savedTicket = findOrElseThrow(boardId, ticketId);
+        savedTicket.addAssignees(assignees);
+
+        return savedTicket;
+    }
+
+    @Override
+    public Ticket deleteAssignees(Long boardId, Long ticketId, List<Assignee> assignees) {
+        Ticket savedTicket = findOrElseThrow(boardId, ticketId);
+        savedTicket.deleteAssignees(assignees);
+
+        return savedTicket;
+    }
+
+    @Override
     public void deleteById(Long boardId, Long ticketId) {
-        Ticket ticket = getOrElseThrow(boardId, ticketId);
+        Ticket ticket = findOrElseThrow(boardId, ticketId);
 
         repository.delete(ticket);
     }
@@ -84,7 +114,8 @@ public class TicketRepositoryImpl implements TicketRepository {
         return repository.findByBoardIdAndUserId(boardId, userId);
     }
 
-    private Ticket getOrElseThrow(Long boardId, Long ticketId) {
+    @Override
+    public Ticket findOrElseThrow(Long boardId, Long ticketId) {
         return repository.findByBoardIdAndTicketId(boardId, ticketId)
             .orElseThrow(() -> new EntityNotFoundException("Ticket not found"));
     }

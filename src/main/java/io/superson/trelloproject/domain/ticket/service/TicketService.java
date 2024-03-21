@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class TicketService {
 
-    private static final Float POSITION_INCREMENT = 4294967296F;
+    private static final Float POSITION_INCREMENT = 4294967296F; // 2 ^ 32
 
     private final TicketRepository ticketRepository;
     private final StatusRepository statusRepository;
@@ -76,15 +76,50 @@ public class TicketService {
         return TicketMapper.toTicketResponseDto(updatedTicket);
     }
 
+    public TicketResponseDto addAssignees(
+        Long boardId,
+        Long ticketId, List<String> assigneeEmails,
+        String userId
+    ) {
+        validateUserAccess(boardId, userId);
+
+        List<Assignee> assignees = ticketRepository.findUsersInBoardByEmails(boardId, assigneeEmails)
+            .stream()
+            .map(Assignee::new)
+            .toList();
+
+        Ticket updatedTicket = ticketRepository.addAssignees(boardId, ticketId, assignees);
+
+        return TicketMapper.toTicketResponseDto(updatedTicket);
+    }
+
     public void deleteTicket(Long boardId, Long ticketId, String userId) {
         validateUserAccess(boardId, userId);
 
         ticketRepository.deleteById(boardId, ticketId);
     }
 
+    public TicketResponseDto deleteAssignees(
+        Long boardId,
+        Long ticketId,
+        List<String> assigneeEmails,
+        String userId
+    ) {
+        validateUserAccess(boardId, userId);
+
+        List<Assignee> assignees = ticketRepository.findAssigneesInTicketByEmails(boardId, ticketId, assigneeEmails);
+        if (assigneeEmails.size() != assignees.size()) {
+            throw new EntityNotFoundException("Assignee not found");
+        }
+
+        Ticket updatedTicket = ticketRepository.deleteAssignees(boardId, ticketId, assignees);
+
+        return TicketMapper.toTicketResponseDto(updatedTicket);
+    }
+
     private UserBoard validateUserAccess(Long boardId, String userId) {
         return ticketRepository.validateUserAccess(boardId, userId)
-            .orElseThrow(() -> new IllegalArgumentException("User not found"));
+            .orElseThrow(() -> new EntityNotFoundException("User not found"));
     }
 
     private Float calculatePosition(Long statusId, Long previousTicketId) {
