@@ -5,5 +5,5 @@ import java.util.List;
 
 public interface UserQueryRepository {
 
-    List<Invite> findAllByUserId(String userId);
+    List<Invite> findAllInviteByUserId(String userId);
 }

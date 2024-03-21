@@ -91,7 +91,7 @@ public class UserService {
     }
 
     public List<UserInviteResponseDto> getInvitations(User user) {
-        List<Invite> inviteList = userQueryRepository.findAllByUserId(user.getUserId());
+        List<Invite> inviteList = userQueryRepository.findAllInviteByUserId(user.getUserId());
         return inviteList.stream().map(UserInviteResponseDto::new)
             .toList();
     }

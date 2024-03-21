@@ -17,7 +17,7 @@ public class UserQueryRepositoryImpl implements UserQueryRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public List<Invite> findAllByUserId(String userId) {
+    public List<Invite> findAllInviteByUserId(String userId) {
         return jpaQueryFactory.select(invite)
             .from(invite)
             .join(user).on(invite.userId.eq(user.userId))
