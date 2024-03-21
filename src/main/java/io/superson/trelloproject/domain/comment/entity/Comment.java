@@ -1,20 +1,20 @@
 package io.superson.trelloproject.domain.comment.entity;
 
+import io.superson.trelloproject.domain.comment.dto.CommentRequestDto;
 import io.superson.trelloproject.domain.common.entity.Timestamped;
 import io.superson.trelloproject.domain.ticket.entity.Ticket;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import io.superson.trelloproject.domain.user.entity.User;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-
-/**
- * 임시로 만들어 둔 엔티티입니다. 컨플릭트 발생 시 `9noeyni9`님의 코드로 변경해주세요.
- */
 @Entity
+@Getter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "tb_comment")
 public class Comment extends Timestamped {
 
@@ -22,10 +22,24 @@ public class Comment extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long commentId;
 
+    @Column(nullable = false)
     private String content;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "ticket_id")
     private Ticket ticket;
 
+    public Comment(String content, User user, Ticket ticket) {
+        this.content = content;
+        this.user = user;
+        this.ticket = ticket;
+    }
+
+    public void updateComment(CommentRequestDto commentRequestDto) {
+        this.content = commentRequestDto.getContent();
+    }
 }

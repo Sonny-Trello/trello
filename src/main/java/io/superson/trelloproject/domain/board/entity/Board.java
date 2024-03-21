@@ -1,6 +1,5 @@
 package io.superson.trelloproject.domain.board.entity;
 
-
 import io.superson.trelloproject.domain.board.dto.BoardRequestDto;
 import io.superson.trelloproject.domain.common.entity.Timestamped;
 import io.superson.trelloproject.domain.user.entity.User;
