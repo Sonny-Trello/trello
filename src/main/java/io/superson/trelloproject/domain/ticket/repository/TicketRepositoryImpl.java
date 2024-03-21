@@ -19,12 +19,17 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class TicketRepositoryImpl implements TicketRepository {
 
+    private static final Float POSITION_INCREMENT = 4294967296F;
+
     private final TicketQuerydslJpaRepository repository;
 
     @Override
     public Ticket save(Ticket ticket, Board board, Status status, List<Assignee> assignees) {
         ticket.setParents(board, status);
         ticket.addAssignees(assignees);
+
+        Float position = repository.findMaxPosition(status.getStatusId()) + POSITION_INCREMENT;
+        ticket.setPosition(position);
 
         return repository.saveAndFlush(ticket);
     }
@@ -34,6 +39,16 @@ public class TicketRepositoryImpl implements TicketRepository {
         Optional<TicketDetailsVo> ticketWithById = repository.findTicketDetails(ticketId);
 
         return ticketWithById.map(TicketMapper::toTicketDetailsResponseDto);
+    }
+
+    @Override
+    public Float findMinPositionByStatusId(Long statusId) {
+        return repository.findMinPosition(statusId);
+    }
+
+    @Override
+    public List<Float> findPreviousAndNextTicketPositions(Long statusId, Long previousTicketId) {
+        return repository.findPreviousAndNextTicketPositions(statusId, previousTicketId);
     }
 
     @Override
@@ -48,10 +63,11 @@ public class TicketRepositoryImpl implements TicketRepository {
     }
 
     @Override
-    public Ticket updateStatus(Long boardId, Long ticketId, Status status) {
+    public Ticket updateStatus(Long boardId, Long ticketId, Status status, Float position) {
         Ticket ticket = getOrElseThrow(boardId, ticketId);
 
         ticket.setStatus(status);
+        ticket.setPosition(position);
 
         return repository.saveAndFlush(ticket);
     }

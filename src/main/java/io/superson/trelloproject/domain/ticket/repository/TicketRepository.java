@@ -16,13 +16,17 @@ public interface TicketRepository {
 
     Optional<TicketDetailsResponseDto> findTicketDetailsById(Long boardId, Long ticketId);
 
+    Float findMinPositionByStatusId(Long statusId);
+
+    List<Float> findPreviousAndNextTicketPositions(Long statusId, Long previousTicketId);
+
     Ticket update(
         Long boardId,
         Long ticketId,
         TicketCreateRequestDto requestDto
     );
 
-    Ticket updateStatus(Long boardId, Long ticketId, Status status);
+    Ticket updateStatus(Long boardId, Long ticketId, Status status, Float position);
 
     void deleteById(Long boardId, Long ticketId);
 

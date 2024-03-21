@@ -1,5 +1,12 @@
 package io.superson.trelloproject.domain.ticket.repository;
 
+import static io.superson.trelloproject.domain.board.entity.QUserBoard.userBoard;
+import static io.superson.trelloproject.domain.comment.entity.QComment.comment;
+import static io.superson.trelloproject.domain.ticket.entity.QAssignee.assignee;
+import static io.superson.trelloproject.domain.ticket.entity.QTicket.ticket;
+
+import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.superson.trelloproject.domain.board.entity.UserBoard;
 import io.superson.trelloproject.domain.ticket.entity.Ticket;
@@ -23,10 +30,8 @@ public class TicketQuerydslRepositoryImpl implements TicketQuerydslRepository {
 
     @Override
     public Optional<Ticket> findByBoardIdAndTicketId(Long boardId, Long ticketId) {
-        return Optional.ofNullable(queryFactory
-            .selectFrom(ticket)
-            .where(ticket.board.boardId.eq(boardId),
-                ticket.ticketId.eq(ticketId))
+        return Optional.ofNullable(queryFactory.selectFrom(ticket)
+            .where(ticket.board.boardId.eq(boardId), ticket.ticketId.eq(ticketId))
             .fetchOne());
     }
 
@@ -61,18 +66,50 @@ public class TicketQuerydslRepositoryImpl implements TicketQuerydslRepository {
 
     @Override
     public Optional<UserBoard> findByBoardIdAndUserId(Long boardId, String userId) {
-        return Optional.ofNullable(queryFactory
-                .selectFrom(userBoard)
-                .where(userBoard.board.boardId.eq(boardId),
-                        userBoard.user.userId.eq(userId))
-                .fetchOne());
+        return Optional.ofNullable(queryFactory.selectFrom(userBoard)
+            .where(userBoard.board.boardId.eq(boardId), userBoard.user.userId.eq(userId))
+            .fetchOne());
     }
 
     @Override
     public Ticket findTicketByBoardIdAndTicketId(Long boardId, Long ticketId) {
         return queryFactory.select(ticket)
-                .from(ticket)
-                .where(ticket.board.boardId.eq(boardId))
-                .fetchOne();
+            .from(ticket)
+            .where(ticket.board.boardId.eq(boardId))
+            .fetchOne();
     }
+
+    @Override
+    public List<Float> findPreviousAndNextTicketPositions(Long statusId, Long previousTicketId) {
+        JPQLQuery<Float> previousTicketPosition = JPAExpressions.select(ticket.position)
+            .from(ticket)
+            .where(ticket.ticketId.eq(previousTicketId));
+
+        List<Float> positions = queryFactory.select(ticket.position)
+            .from(ticket)
+            .where(ticket.status.statusId.eq(statusId),
+                ticket.position.goe(previousTicketPosition))
+            .orderBy(ticket.position.asc())
+            .limit(2)
+            .fetch();
+
+        return positions;
+    }
+
+    @Override
+    public Float findMinPosition(Long statusId) {
+        return queryFactory.select(ticket.position.min())
+            .from(ticket)
+            .where(ticket.status.statusId.eq(statusId))
+            .fetchOne();
+    }
+
+    @Override
+    public Float findMaxPosition(Long statusId) {
+        return queryFactory.select(ticket.position.max())
+            .from(ticket)
+            .where(ticket.status.statusId.eq(statusId))
+            .fetchOne();
+    }
+
 }

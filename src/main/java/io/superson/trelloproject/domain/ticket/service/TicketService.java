@@ -22,6 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class TicketService {
 
+    private static final Float POSITION_INCREMENT = 4294967296F;
+
     private final TicketRepository ticketRepository;
     private final StatusRepository statusRepository;
     private final UserRepository userRepository;
@@ -63,12 +65,13 @@ public class TicketService {
     }
 
     public TicketResponseDto updateStatus(
-        Long boardId, Long ticketId, Long statusId, String userId
+        Long boardId, Long ticketId, Long statusId, Long previousTicketId, String userId
     ) {
         validateUserAccess(boardId, userId);
         Status status = statusRepository.findStatusOrElseThrow(statusId);
+        Float position = calculatePosition(statusId, previousTicketId);
 
-        Ticket updatedTicket = ticketRepository.updateStatus(boardId, ticketId, status);
+        Ticket updatedTicket = ticketRepository.updateStatus(boardId, ticketId, status, position);
 
         return TicketMapper.toTicketResponseDto(updatedTicket);
     }
@@ -82,6 +85,23 @@ public class TicketService {
     private UserBoard validateUserAccess(Long boardId, String userId) {
         return ticketRepository.validateUserAccess(boardId, userId)
             .orElseThrow(() -> new IllegalArgumentException("User not found"));
+    }
+
+    private Float calculatePosition(Long statusId, Long previousTicketId) {
+        if (previousTicketId == null) {
+            Float minPosition = ticketRepository.findMinPositionByStatusId(statusId);
+
+            return (minPosition == null) ? POSITION_INCREMENT : Float.valueOf(minPosition / 2);
+        }
+
+        List<Float> positions = ticketRepository.findPreviousAndNextTicketPositions(statusId, previousTicketId);
+        if (positions.size() == 1) {
+            return positions.get(0) + POSITION_INCREMENT;
+        } else if (positions.size() == 2) {
+            return (positions.get(0) + positions.get(1)) / 2;
+        }
+
+        return POSITION_INCREMENT;
     }
 
 }

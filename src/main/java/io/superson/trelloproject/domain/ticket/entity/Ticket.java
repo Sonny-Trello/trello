@@ -53,6 +53,10 @@ public class Ticket extends Timestamped {
     private Board board;
 
     @Setter
+    @Column(nullable = false)
+    private Float position;
+
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "status_id", nullable = false)
     private Status status;
