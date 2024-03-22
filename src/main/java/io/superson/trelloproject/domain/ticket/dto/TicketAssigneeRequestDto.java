@@ -1,13 +1,13 @@
 package io.superson.trelloproject.domain.ticket.dto;
 
 import java.util.List;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
-@AllArgsConstructor
+@NoArgsConstructor
 public class TicketAssigneeRequestDto {
 
-    private final List<String> assigneeEmails;
+    private List<String> assigneeEmails;
 
 }

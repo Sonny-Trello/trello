@@ -21,7 +21,7 @@ public interface TicketRepository {
 
     Double findMinPositionByStatusId(Long statusId);
 
-    List<Double> findPreviousAndNextTicketPositions(Long statusId, Long previousTicketId);
+    List<Ticket> findPreviousAndNextTicket(Long statusId, Long previousTicketId);
 
     List<User> findUsersInBoardByEmails(Long boardId, List<String> assigneeEmails);
 

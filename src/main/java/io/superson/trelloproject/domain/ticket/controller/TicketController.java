@@ -5,6 +5,7 @@ import io.superson.trelloproject.domain.ticket.dto.TicketAssigneeRequestDto;
 import io.superson.trelloproject.domain.ticket.dto.TicketCreateRequestDto;
 import io.superson.trelloproject.domain.ticket.dto.TicketDetailsResponseDto;
 import io.superson.trelloproject.domain.ticket.dto.TicketResponseDto;
+import io.superson.trelloproject.domain.ticket.dto.TicketStatusUpdateRequestDto;
 import io.superson.trelloproject.domain.ticket.service.TicketService;
 import io.superson.trelloproject.global.impl.UserDetailsImpl;
 import jakarta.validation.constraints.Positive;
@@ -21,7 +22,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -82,19 +82,19 @@ public class TicketController {
         return ResponseEntity.ok(ResponseDto.of(responseDto));
     }
 
-    @PatchMapping("/status/{statusId}/tickets/{ticketId}")
+    @PatchMapping("/status/{fromStatusId}/tickets/{ticketId}")
     public ResponseEntity<ResponseDto<TicketResponseDto>> updateStatus(
         final @PathVariable @Positive Long boardId,
         final @PathVariable @Positive Long ticketId,
-        final @PathVariable @Positive Long statusId,
-        final @RequestParam(required = false) @Positive Long previousTicketId,
+        final @PathVariable @Positive Long fromStatusId,
+        final @Validated TicketStatusUpdateRequestDto requestDto,
         final @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        TicketResponseDto responseDto = ticketService.updateStatus(
+        TicketResponseDto responseDto = ticketService.updateStatusAndOrder(
             boardId,
+            fromStatusId,
             ticketId,
-            statusId,
-            previousTicketId,
+            requestDto,
             userDetails.getUser().getUserId()
         );
 
@@ -112,7 +112,8 @@ public class TicketController {
             boardId,
             ticketId,
             requestDto.getAssigneeEmails(),
-            userDetails.getUser().getUserId());
+            userDetails.getUser().getUserId()
+        );
 
         return ResponseEntity.ok(ResponseDto.of(ticketResponseDto));
     }
@@ -128,7 +129,8 @@ public class TicketController {
             boardId,
             ticketId,
             requestDto.getAssigneeEmails(),
-            userDetails.getUser().getUserId());
+            userDetails.getUser().getUserId()
+        );
 
         return ResponseEntity.ok(ResponseDto.of(ticketResponseDto));
     }

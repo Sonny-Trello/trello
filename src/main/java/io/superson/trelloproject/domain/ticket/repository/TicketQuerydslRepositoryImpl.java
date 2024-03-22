@@ -93,14 +93,14 @@ public class TicketQuerydslRepositoryImpl implements TicketQuerydslRepository {
     }
 
     @Override
-    public List<Double> findPreviousAndNextTicketPositions(Long statusId, Long previousTicketId) {
+    public List<Ticket> findPreviousAndNextTicket(Long statusId, Long previousTicketId) {
         JPQLQuery<Double> previousTicketPosition = JPAExpressions.select(ticket.position)
             .from(ticket)
             .where(ticket.ticketId.eq(previousTicketId));
 
-        return queryFactory.select(ticket.position)
-            .from(ticket)
-            .where(ticket.status.statusId.eq(statusId), ticket.position.goe(previousTicketPosition))
+        return queryFactory.selectFrom(ticket)
+            .where(ticket.status.statusId.eq(statusId))
+            .where(ticket.position.goe(previousTicketPosition))
             .orderBy(ticket.position.asc())
             .limit(2)
             .fetch();
@@ -108,8 +108,10 @@ public class TicketQuerydslRepositoryImpl implements TicketQuerydslRepository {
 
     @Override
     public List<User> findUsersInBoardByEmails(Long boardId, List<String> assigneeEmails) {
-        return queryFactory.selectFrom(user)
+        return queryFactory.select(user)
+            .from(user)
             .join(userBoard)
+            .on(userBoard.user.userId.eq(user.userId))
             .where(userBoard.board.boardId.eq(boardId), user.email.in(assigneeEmails), user.deletedAt.isNotNull())
             .fetch();
     }

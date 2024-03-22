@@ -18,7 +18,7 @@ public interface TicketQuerydslRepository {
 
     List<User> findUsersInBoardByEmails(Long boardId, List<String> assigneeEmails);
 
-    List<Double> findPreviousAndNextTicketPositions(Long statusId, Long previousTicketId);
+    List<Ticket> findPreviousAndNextTicket(Long statusId, Long previousTicketId);
 
     List<Assignee> findAssigneesInTicketByEmails(Long boardId, Long ticketId, List<String> emails);
 
