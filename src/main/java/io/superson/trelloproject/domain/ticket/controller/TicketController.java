@@ -1,9 +1,11 @@
 package io.superson.trelloproject.domain.ticket.controller;
 
 import io.superson.trelloproject.domain.common.dto.ResponseDto;
+import io.superson.trelloproject.domain.ticket.dto.TicketAssigneeRequestDto;
 import io.superson.trelloproject.domain.ticket.dto.TicketCreateRequestDto;
 import io.superson.trelloproject.domain.ticket.dto.TicketDetailsResponseDto;
 import io.superson.trelloproject.domain.ticket.dto.TicketResponseDto;
+import io.superson.trelloproject.domain.ticket.dto.TicketStatusUpdateRequestDto;
 import io.superson.trelloproject.domain.ticket.service.TicketService;
 import io.superson.trelloproject.global.impl.UserDetailsImpl;
 import jakarta.validation.constraints.Positive;
@@ -80,21 +82,57 @@ public class TicketController {
         return ResponseEntity.ok(ResponseDto.of(responseDto));
     }
 
-    @PatchMapping("/status/{statusId}/tickets/{ticketId}")
+    @PatchMapping("/status/{fromStatusId}/tickets/{ticketId}")
     public ResponseEntity<ResponseDto<TicketResponseDto>> updateStatus(
         final @PathVariable @Positive Long boardId,
         final @PathVariable @Positive Long ticketId,
-        final @PathVariable @Positive Long statusId,
+        final @PathVariable @Positive Long fromStatusId,
+        final @Validated TicketStatusUpdateRequestDto requestDto,
         final @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        TicketResponseDto responseDto = ticketService.updateStatus(
+        TicketResponseDto responseDto = ticketService.updateStatusAndOrder(
             boardId,
+            fromStatusId,
             ticketId,
-            statusId,
+            requestDto,
             userDetails.getUser().getUserId()
         );
 
         return ResponseEntity.ok(ResponseDto.of(responseDto));
+    }
+
+    @PostMapping("/tickets/{ticketId}/assignees")
+    public ResponseEntity<ResponseDto<TicketResponseDto>> addAssignees(
+        final @PathVariable @Positive Long boardId,
+        final @PathVariable @Positive Long ticketId,
+        final @RequestBody @Validated TicketAssigneeRequestDto requestDto,
+        final @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        TicketResponseDto ticketResponseDto = ticketService.addAssignees(
+            boardId,
+            ticketId,
+            requestDto.getAssigneeEmails(),
+            userDetails.getUser().getUserId()
+        );
+
+        return ResponseEntity.ok(ResponseDto.of(ticketResponseDto));
+    }
+
+    @DeleteMapping("/tickets/{ticketId}/assignees")
+    public ResponseEntity<ResponseDto<TicketResponseDto>> deleteAssignees(
+        final @PathVariable @Positive Long boardId,
+        final @PathVariable @Positive Long ticketId,
+        final @RequestBody @Validated TicketAssigneeRequestDto requestDto,
+        final @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        TicketResponseDto ticketResponseDto = ticketService.deleteAssignees(
+            boardId,
+            ticketId,
+            requestDto.getAssigneeEmails(),
+            userDetails.getUser().getUserId()
+        );
+
+        return ResponseEntity.ok(ResponseDto.of(ticketResponseDto));
     }
 
     @DeleteMapping("/tickets/{ticketId}")

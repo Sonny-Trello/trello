@@ -40,4 +40,9 @@ public class Assignee {
         this.assigneeId = new AssigneeId(ticket.getTicketId(), user.getUserId());
     }
 
+    public void removeTicket() {
+        this.ticket = null;
+        this.assigneeId = null;
+    }
+
 }

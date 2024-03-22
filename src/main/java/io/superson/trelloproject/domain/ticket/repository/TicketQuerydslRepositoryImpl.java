@@ -1,10 +1,30 @@
 package io.superson.trelloproject.domain.ticket.repository;
 
+import static io.superson.trelloproject.domain.board.entity.QUserBoard.userBoard;
+import static io.superson.trelloproject.domain.comment.entity.QComment.comment;
+import static io.superson.trelloproject.domain.ticket.entity.QAssignee.assignee;
+import static io.superson.trelloproject.domain.ticket.entity.QTicket.ticket;
+import static io.superson.trelloproject.domain.user.entity.QUser.user;
+
+import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.superson.trelloproject.domain.board.entity.UserBoard;
+import io.superson.trelloproject.domain.ticket.entity.Assignee;
 import io.superson.trelloproject.domain.ticket.entity.Ticket;
+import io.superson.trelloproject.domain.ticket.repository.vo.AssigneeVo;
+import io.superson.trelloproject.domain.ticket.repository.vo.CommentVo;
+import io.superson.trelloproject.domain.ticket.repository.vo.QAssigneeVo;
+import io.superson.trelloproject.domain.ticket.repository.vo.QCommentVo;
+import io.superson.trelloproject.domain.ticket.repository.vo.QTicketDetailsVo;
+import io.superson.trelloproject.domain.ticket.repository.vo.TicketDetailsVo;
+import io.superson.trelloproject.domain.user.entity.User;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import io.superson.trelloproject.domain.ticket.repository.vo.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -23,10 +43,8 @@ public class TicketQuerydslRepositoryImpl implements TicketQuerydslRepository {
 
     @Override
     public Optional<Ticket> findByBoardIdAndTicketId(Long boardId, Long ticketId) {
-        return Optional.ofNullable(queryFactory
-            .selectFrom(ticket)
-            .where(ticket.board.boardId.eq(boardId),
-                ticket.ticketId.eq(ticketId))
+        return Optional.ofNullable(queryFactory.selectFrom(ticket)
+            .where(ticket.board.boardId.eq(boardId), ticket.ticketId.eq(ticketId))
             .fetchOne());
     }
 
@@ -61,18 +79,71 @@ public class TicketQuerydslRepositoryImpl implements TicketQuerydslRepository {
 
     @Override
     public Optional<UserBoard> findByBoardIdAndUserId(Long boardId, String userId) {
-        return Optional.ofNullable(queryFactory
-                .selectFrom(userBoard)
-                .where(userBoard.board.boardId.eq(boardId),
-                        userBoard.user.userId.eq(userId))
-                .fetchOne());
+        return Optional.ofNullable(queryFactory.selectFrom(userBoard)
+            .where(userBoard.board.boardId.eq(boardId), userBoard.user.userId.eq(userId))
+            .fetchOne());
     }
 
     @Override
     public Ticket findTicketByBoardIdAndTicketId(Long boardId, Long ticketId) {
         return queryFactory.select(ticket)
-                .from(ticket)
-                .where(ticket.board.boardId.eq(boardId))
-                .fetchOne();
+            .from(ticket)
+            .where(ticket.board.boardId.eq(boardId))
+            .fetchOne();
     }
+
+    @Override
+    public List<Ticket> findPreviousAndNextTicket(Long statusId, Long previousTicketId) {
+        JPQLQuery<Double> previousTicketPosition = JPAExpressions.select(ticket.position)
+            .from(ticket)
+            .where(ticket.ticketId.eq(previousTicketId));
+
+        return queryFactory.selectFrom(ticket)
+            .where(ticket.status.statusId.eq(statusId))
+            .where(ticket.position.goe(previousTicketPosition))
+            .orderBy(ticket.position.asc())
+            .limit(2)
+            .fetch();
+    }
+
+    @Override
+    public List<User> findUsersInBoardByEmails(Long boardId, List<String> assigneeEmails) {
+        return queryFactory.select(user)
+            .from(user)
+            .join(userBoard)
+            .on(userBoard.user.userId.eq(user.userId))
+            .where(userBoard.board.boardId.eq(boardId), user.email.in(assigneeEmails), user.deletedAt.isNotNull())
+            .fetch();
+    }
+
+    @Override
+    public List<Assignee> findAssigneesInTicketByEmails(
+        Long boardId, Long ticketId, List<String> emails
+    ) {
+        return queryFactory.selectFrom(assignee)
+            .where(assignee.ticket.ticketId.eq(ticketId), assignee.user.email.in(emails))
+            .fetch();
+    }
+
+    @Override
+    public Double findMinPosition(Long statusId) {
+        Double result = queryFactory.select(ticket.position.min())
+            .from(ticket)
+            .where(ticket.status.statusId.eq(statusId))
+            .fetchOne();
+
+        return Objects.requireNonNullElse(result, 0d);
+    }
+
+    @Nullable
+    @Override
+    public Double findMaxPosition(Long statusId) {
+        Double result = queryFactory.select(ticket.position.max())
+            .from(ticket)
+            .where(ticket.status.statusId.eq(statusId))
+            .fetchOne();
+
+        return Objects.requireNonNullElse(result, 0d);
+    }
+
 }

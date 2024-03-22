@@ -9,6 +9,7 @@ import io.superson.trelloproject.domain.ticket.entity.Assignee;
 import io.superson.trelloproject.domain.ticket.entity.Ticket;
 import io.superson.trelloproject.domain.ticket.mapper.TicketMapper;
 import io.superson.trelloproject.domain.ticket.repository.vo.TicketDetailsVo;
+import io.superson.trelloproject.domain.user.entity.User;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
@@ -19,28 +20,62 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class TicketRepositoryImpl implements TicketRepository {
 
+    private static final Double POSITION_INCREMENT = 65536d; // 2 ^ 16
+
     private final TicketQuerydslJpaRepository repository;
 
     @Override
-    public Ticket save(Ticket ticket, Board board, Status status, List<Assignee> assignees) {
+    public Ticket save(
+        final Ticket ticket, final Board board, final Status status, final List<Assignee> assignees
+    ) {
         ticket.setParents(board, status);
         ticket.addAssignees(assignees);
+
+        Double position = repository.findMaxPosition(status.getStatusId()) + POSITION_INCREMENT;
+        ticket.setPosition(position);
 
         return repository.saveAndFlush(ticket);
     }
 
     @Override
-    public Optional<TicketDetailsResponseDto> findTicketDetailsById(Long boardId, Long ticketId) {
+    public Optional<TicketDetailsResponseDto> findTicketDetailsById(
+        final Long boardId, final Long ticketId
+    ) {
         Optional<TicketDetailsVo> ticketWithById = repository.findTicketDetails(ticketId);
 
         return ticketWithById.map(TicketMapper::toTicketDetailsResponseDto);
     }
 
     @Override
-    public Ticket update(
-        Long boardId, Long ticketId, TicketCreateRequestDto requestDto
+    public Double findMinPositionByStatusId(final Long statusId) {
+        return repository.findMinPosition(statusId);
+    }
+
+    @Override
+    public List<Ticket> findPreviousAndNextTicket(
+        final Long statusId, final Long previousTicketId
     ) {
-        Ticket ticket = getOrElseThrow(boardId, ticketId);
+        return repository.findPreviousAndNextTicket(statusId, previousTicketId);
+    }
+
+    @Override
+    public List<User> findUsersInBoardByEmails(
+        final Long boardId, final List<String> assigneeEmails
+    ) {
+        return repository.findUsersInBoardByEmails(boardId, assigneeEmails);
+    }
+
+    public List<Assignee> findAssigneesInTicketByEmails(
+        final Long boardId, final Long ticketId, final List<String> emails
+    ) {
+        return repository.findAssigneesInTicketByEmails(boardId, ticketId, emails);
+    }
+
+    @Override
+    public Ticket update(
+        final Long boardId, final Long ticketId, final TicketCreateRequestDto requestDto
+    ) {
+        Ticket ticket = findOrElseThrow(boardId, ticketId);
 
         ticket.update(requestDto);
 
@@ -48,27 +83,57 @@ public class TicketRepositoryImpl implements TicketRepository {
     }
 
     @Override
-    public Ticket updateStatus(Long boardId, Long ticketId, Status status) {
-        Ticket ticket = getOrElseThrow(boardId, ticketId);
+    public Ticket updateStatus(
+        final Long boardId, final Long ticketId, final Status status, final Double position
+    ) {
+        Ticket ticket = findOrElseThrow(boardId, ticketId);
 
         ticket.setStatus(status);
+        ticket.setPosition(position);
 
         return repository.saveAndFlush(ticket);
     }
 
     @Override
-    public void deleteById(Long boardId, Long ticketId) {
-        Ticket ticket = getOrElseThrow(boardId, ticketId);
+    public Ticket addAssignees(
+        final Long boardId, final Long ticketId, final List<Assignee> assignees
+    ) {
+        Ticket savedTicket = findOrElseThrow(boardId, ticketId);
+        savedTicket.addAssignees(assignees);
+
+        return savedTicket;
+    }
+
+    @Override
+    public Ticket deleteAssignees(
+        final Long boardId, final Long ticketId, final List<Assignee> assignees
+    ) {
+        Ticket savedTicket = findOrElseThrow(boardId, ticketId);
+        savedTicket.deleteAssignees(assignees);
+
+        return savedTicket;
+    }
+
+    @Override
+    public void deleteById(
+        final Long boardId, final Long ticketId
+    ) {
+        Ticket ticket = findOrElseThrow(boardId, ticketId);
 
         repository.delete(ticket);
     }
 
     @Override
-    public Optional<UserBoard> validateUserAccess(Long boardId, String userId) {
+    public Optional<UserBoard> validateUserAccess(
+        final Long boardId, final String userId
+    ) {
         return repository.findByBoardIdAndUserId(boardId, userId);
     }
 
-    private Ticket getOrElseThrow(Long boardId, Long ticketId) {
+    @Override
+    public Ticket findOrElseThrow(
+        final Long boardId, final Long ticketId
+    ) {
         return repository.findByBoardIdAndTicketId(boardId, ticketId)
             .orElseThrow(() -> new EntityNotFoundException("Ticket not found"));
     }
