@@ -53,6 +53,10 @@ public class Ticket extends Timestamped {
     private Board board;
 
     @Setter
+    @Column(nullable = false)
+    private Double position;
+
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "status_id", nullable = false)
     private Status status;
@@ -98,6 +102,15 @@ public class Ticket extends Timestamped {
 
     public void addAssignees(List<Assignee> assignees) {
         assignees.forEach(this::addAssignee);
+    }
+
+    public void deleteAssignee(Assignee assignee) {
+        assignees.remove(assignee);
+        assignee.removeTicket();
+    }
+
+    public void deleteAssignees(List<Assignee> assignees) {
+        assignees.forEach(this::deleteAssignee);
     }
 
 }
