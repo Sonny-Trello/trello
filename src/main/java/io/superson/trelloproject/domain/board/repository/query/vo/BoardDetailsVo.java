@@ -20,8 +20,6 @@ public class BoardDetailsVo {
 
     @Setter
     private List<StatusesVo> statuses;
-    @Setter
-    private List<TicketsVo> tickets;
 
     @QueryProjection
     public BoardDetailsVo(

@@ -16,7 +16,6 @@ public class BoardDetailsResponseDto {
     private String color;
     private String description;
     private List<StatusesVo> statuses;
-    private List<TicketsVo> tickets;
 
     public BoardDetailsResponseDto(BoardDetailsVo boardDetailsVo) {
         this.boardId = boardDetailsVo.getBoardId();
@@ -24,6 +23,5 @@ public class BoardDetailsResponseDto {
         this.color = String.valueOf(boardDetailsVo.getColor());
         this.description = boardDetailsVo.getDescription();
         this.statuses = boardDetailsVo.getStatuses();
-        this.tickets = boardDetailsVo.getTickets();
     }
 }

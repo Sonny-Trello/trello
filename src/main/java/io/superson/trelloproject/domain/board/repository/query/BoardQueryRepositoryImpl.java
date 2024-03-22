@@ -15,7 +15,10 @@ import io.superson.trelloproject.domain.board.repository.query.vo.QTicketsVo;
 import io.superson.trelloproject.domain.board.repository.query.vo.StatusesVo;
 import io.superson.trelloproject.domain.board.repository.query.vo.TicketsVo;
 import io.superson.trelloproject.domain.user.entity.User;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -80,8 +83,26 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepository {
             .fetch();
 
         boardDetailsVo.setStatuses(statusesVo);
-        boardDetailsVo.setTickets(ticketsVo);
+        mappingTicketsToStatuses(statusesVo, ticketsVo);
 
         return boardDetailsVo;
+    }
+
+    private void mappingTicketsToStatuses(List<StatusesVo> statusesVo, List<TicketsVo> ticketsVo) {
+        Map<Long, List<TicketsVo>> ticketsMap = new HashMap<>();
+        for (TicketsVo ticket : ticketsVo) {
+            Long statusId = ticket.getStatusId();
+            if (!ticketsMap.containsKey(statusId)) {
+                ticketsMap.put(statusId, new ArrayList<>());
+            }
+            ticketsMap.get(statusId).add(ticket);
+        }
+
+        for (StatusesVo status : statusesVo) {
+            Long statusId = status.getStatusId();
+            if (ticketsMap.containsKey(statusId)) {
+                status.setTickets(ticketsMap.get(statusId));
+            }
+        }
     }
 }

@@ -9,10 +9,14 @@ import lombok.Setter;
 
 @Getter
 @Builder
+@AllArgsConstructor
 public class StatusesVo {
 
     private Long statusId;
     private String name;
+
+    @Setter
+    private List<TicketsVo> tickets;
 
     @QueryProjection
     public StatusesVo(Long statusId, String name) {
