@@ -55,7 +55,7 @@ public class StatusController {
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long boardId,
             @PathVariable Long statusId,
-            float frontPositionNumber
+            @RequestParam Float frontPositionNumber
     ) {
         statusService.updateStatusNumber(userDetails.getUser(), boardId, statusId, frontPositionNumber);
         return ResponseEntity.created(createUri(statusId))

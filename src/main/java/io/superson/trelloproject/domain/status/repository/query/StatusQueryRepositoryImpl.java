@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import static io.superson.trelloproject.domain.status.entity.QStatus.status;
 
@@ -34,17 +35,27 @@ public class StatusQueryRepositoryImpl implements StatusQueryRepository {
 
 
     @Override
-    public Status findPreviousStatus(Long boardId, float previousPositionNumber) {
-        return jpaQueryFactory.select(status)
+    public Optional<Status> findPreviousStatus(Long boardId, float previousPositionNumber) {
+        return Optional.ofNullable(jpaQueryFactory.select(status)
                 .from(status)
                 .where(status.board.boardId.eq(boardId))
                 .where(status.statusNumber.lt(previousPositionNumber))
                 .orderBy(status.statusNumber.desc())
-                .fetchOne();
+                .fetchFirst());
     }
 
     @Override
-    public float getNextStatusNumberByStatusId(Long boardId, float previousPositionNumber) {
+    public Optional<Status> findFollowingStatus(Long boardId, float previousPositionNumber) {
+        return Optional.ofNullable(jpaQueryFactory.select(status)
+                .from(status)
+                .where(status.board.boardId.eq(boardId))
+                .where(status.statusNumber.gt(previousPositionNumber))
+                .orderBy(status.statusNumber.desc())
+                .fetchFirst());
+    }
+
+    @Override
+    public float getPreviousStatusNumberByStatusId(Long boardId, float previousPositionNumber) {
         return jpaQueryFactory.select(status.statusNumber)
                 .from(status)
                 .where(status.board.boardId.eq(boardId))
@@ -53,4 +64,22 @@ public class StatusQueryRepositoryImpl implements StatusQueryRepository {
                 .fetchFirst();
     }
 
+    @Override
+    public float getNextStatusNumberByStatusId(Long boardId, float previousPositionNumber) {
+        return jpaQueryFactory.select(status.statusNumber)
+                .from(status)
+                .where(status.board.boardId.eq(boardId))
+                .where(status.statusNumber.gt(previousPositionNumber))
+                .orderBy(status.statusNumber.desc())
+                .fetchFirst();
+    }
+
+    @Override
+    public float findFirstPositionStatusNumber(Long boardId) {
+        return jpaQueryFactory.select(status.statusNumber)
+                .from(status)
+                .where(status.board.boardId.eq(boardId))
+                .orderBy(status.statusNumber.asc())
+                .fetchFirst();
+    }
 }

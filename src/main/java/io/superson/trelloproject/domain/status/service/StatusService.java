@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -34,8 +35,8 @@ public class StatusService {
 
         Board board = boardRepository.findById(boardId);
         Status status = Status.builder().name(createStatusRequestDto.getName())
-                .statusNumber((statusQueryRepository.getStatusCount(boardId) + 1) * 65536)
-            .board(board).build();
+                .statusNumber(toStatusNumberBuilder(boardId))
+                .board(board).build();
 
         validateBoardId(status, boardId);
         return new CreateStatusResponseDto(statusRepository.save(user, status));
@@ -60,17 +61,33 @@ public class StatusService {
         statusRepository.deleteById(statusId);
     }
 
-    public void updateStatusNumber(User user, Long boardId, Long statusId, float previousPositionNumber) {
-        // 이동하려는 status 이전 status float number로 카드 이전 조회
-        // 이 두 카드의 statusNumber로 평균 값 구해서 status에 update
+    public void updateStatusNumber(User user, Long boardId, Long statusId, Float previousPositionNumber) {
         Status status = statusRepository.findStatusOrElseThrow(statusId); // 이동할 현재 status
-        Status newPositionOfpreviousStatus = statusQueryRepository.findPreviousStatus(boardId, previousPositionNumber);
+        Optional<Status> newPositionPreviousStatus = statusQueryRepository.findPreviousStatus(boardId, previousPositionNumber);
+        Optional<Status> newPositionFollowingStatus = statusQueryRepository.findFollowingStatus(boardId, previousPositionNumber);
 
         validateBoardId(status, boardId);
-        validateBoardId(newPositionOfpreviousStatus, boardId);
-
         validateUserIsBoardMember(user, boardId);
 
+        // 이동할 위치가 맨 앞 : 파라미터가 null로 들어올 수 없기 때문에 후에 프론트 처리 예정
+        if (newPositionPreviousStatus.isEmpty()) {
+            status = Status.builder().statusNumber(toFirstPositionStatusNumberBuilder(boardId)).build();
+            return;
+        }
+
+        // 위치 이동 없음
+        if (previousPositionNumber == statusQueryRepository.getPreviousStatusNumberByStatusId(boardId, previousPositionNumber)) {
+            status.updateStatusPosition(status.getStatusNumber());
+            return;
+        }
+
+        // 이동할 위차가 맨 뒤
+        if (newPositionFollowingStatus.isEmpty()) {
+            status = Status.builder().statusNumber(toStatusNumberBuilder(boardId)).build();
+            return;
+        }
+
+        // 이동할 위치 앞 뒤 상태 존재
         float nextPositionNumber = statusQueryRepository.getNextStatusNumberByStatusId(boardId, previousPositionNumber);
         float newPositionNumber = (previousPositionNumber + nextPositionNumber) / 2;
 
@@ -89,5 +106,13 @@ public class StatusService {
         if (!Objects.equals(status.getBoard().getBoardId(), boardId)) {
             throw new NoSuchElementException("해당 티켓 상태가 존재하지 않습니다");
         }
+    }
+
+    private float toStatusNumberBuilder(Long boardId) {
+        return (statusQueryRepository.getStatusCount(boardId) + 1) * 65536;
+    }
+
+    private float toFirstPositionStatusNumberBuilder(Long boardId) {
+        return statusQueryRepository.findFirstPositionStatusNumber(boardId) / 2;
     }
 }
