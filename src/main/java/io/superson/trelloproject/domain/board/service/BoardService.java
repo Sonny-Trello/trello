@@ -1,6 +1,6 @@
 package io.superson.trelloproject.domain.board.service;
 
-import io.superson.trelloproject.domain.board.dto.BoardInfoResponseDto;
+import io.superson.trelloproject.domain.board.dto.BoardDetailsResponseDto;
 import io.superson.trelloproject.domain.board.dto.BoardRequestDto;
 import io.superson.trelloproject.domain.board.dto.BoardResponseDto;
 import io.superson.trelloproject.domain.board.dto.InviteRequestDto;
@@ -10,15 +10,19 @@ import io.superson.trelloproject.domain.board.entity.Board;
 import io.superson.trelloproject.domain.board.entity.Invite.Invite;
 import io.superson.trelloproject.domain.board.entity.UserBoard;
 import io.superson.trelloproject.domain.board.repository.command.board.BoardRepository;
+import io.superson.trelloproject.domain.board.repository.query.vo.BoardDetailsVo;
 import io.superson.trelloproject.domain.board.repository.command.invite.InviteRepository;
 import io.superson.trelloproject.domain.board.repository.command.userBoard.UserBoardRepository;
 import io.superson.trelloproject.domain.board.repository.query.BoardQueryRepository;
-import io.superson.trelloproject.domain.status.entity.Status;
-import io.superson.trelloproject.domain.status.repository.query.StatusQueryRepository;
+import io.superson.trelloproject.domain.board.repository.query.vo.StatusesVo;
+import io.superson.trelloproject.domain.board.repository.query.vo.TicketsVo;
 import io.superson.trelloproject.domain.user.entity.User;
 import io.superson.trelloproject.domain.user.repository.command.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,7 +36,6 @@ public class BoardService {
     private final UserBoardRepository userBoardRepository;
     private final InviteRepository inviteRepository;
     private final UserRepository userRepository;
-    private final StatusQueryRepository statusQueryRepository;
 
     public BoardResponseDto createBoard(User user, BoardRequestDto requestDto) {
         Board board = boardRepository.save(new Board(requestDto, user));
@@ -60,11 +63,46 @@ public class BoardService {
     }
 
     @Transactional(readOnly = true)
-    public BoardInfoResponseDto getBoard(Long id) {
+    public BoardDetailsResponseDto getBoard(Long id) {
         Board board = boardRepository.findById(id);
-        List<String> statuses = statusQueryRepository.findAllByBoardId(id);
 
-        return new BoardInfoResponseDto(board, statuses);
+        BoardDetailsVo boardDetailsVo = boardQueryRepository.findBoardDetailsById(id);
+
+//        List<TicketsVo> ticketsVo = boardDetailsVo.getTickets();
+//        List<StatusesVo> statusesVo = boardDetailsVo.getStatuses();
+//
+//        Map<Long, List<TicketsVo>> ticketsMap = new HashMap<>();
+////        List<TicketsVo> tickets = new ArrayList<>();
+//        for(StatusesVo status : statusesVo) {
+//            Long statusId = status.getStatusId();
+////            tickets.clear();
+//            for (TicketsVo ticket : ticketsVo) {
+//                if (ticket.getStatusId().equals(statusId)) {
+//
+//                }
+//            }
+//        }
+//
+//
+//        // Map을 사용하여 StatusesVo의 statusId를 키로, 해당 상태에 속하는 TicketsVo들을 값으로 가지는 Map을 생성합니다.
+//
+//        for (TicketsVo ticket : ticketsVo) {
+//            Long statusId = ticket.getStatusId();
+//            if (!ticketsMap.containsKey(statusId)) {
+//                ticketsMap.put(statusId, ticket);
+//            }
+//            ticketsMap.get(statusId).add(ticket);
+//        }
+//
+//// StatusesVo에 해당하는 TicketsVo 리스트를 설정합니다.
+//        for (StatusesVo status : statusesVo) {
+//            Long statusId = status.getStatusId();
+//            if (ticketsMap.containsKey(statusId)) {
+//                status.setTickets(ticketsMap.get(statusId));
+//            }
+//        }
+
+        return new BoardDetailsResponseDto(boardDetailsVo);
     }
 
     public InviteResponseDto inviteBoard(Long id, InviteRequestDto requestDto) {
