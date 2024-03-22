@@ -6,13 +6,16 @@ import io.superson.trelloproject.domain.status.repository.command.StatusReposito
 import io.superson.trelloproject.domain.ticket.dto.TicketCreateRequestDto;
 import io.superson.trelloproject.domain.ticket.dto.TicketDetailsResponseDto;
 import io.superson.trelloproject.domain.ticket.dto.TicketResponseDto;
+import io.superson.trelloproject.domain.ticket.dto.TicketStatusUpdateRequestDto;
 import io.superson.trelloproject.domain.ticket.entity.Assignee;
 import io.superson.trelloproject.domain.ticket.entity.Ticket;
 import io.superson.trelloproject.domain.ticket.mapper.TicketMapper;
 import io.superson.trelloproject.domain.ticket.repository.TicketRepository;
 import io.superson.trelloproject.domain.user.repository.command.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
+import io.superson.trelloproject.global.exception.UserNotFoundException;
+import io.superson.trelloproject.global.exception.UserPermissionException;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class TicketService {
+
+    private static final Double POSITION_INCREMENT = 65536D; // 2 ^ 16
 
     private final TicketRepository ticketRepository;
     private final StatusRepository statusRepository;
@@ -32,7 +37,7 @@ public class TicketService {
         final TicketCreateRequestDto requestDto,
         final String userId
     ) {
-        UserBoard userBoard = validateUserAccess(boardId, userId);
+        UserBoard userBoard = validateUserAccessToBoard(boardId, userId);
         Status status = statusRepository.findStatusOrElseThrow(statusId);
 
         List<Assignee> assignees = userRepository.findUsersByEmails(requestDto.getAssigneeEmails())
@@ -45,43 +50,125 @@ public class TicketService {
     }
 
     @Transactional(readOnly = true)
-    public TicketDetailsResponseDto findTicketDetails(Long boardId, Long ticketId, String userId) {
-        validateUserAccess(boardId, userId);
+    public TicketDetailsResponseDto findTicketDetails(
+        final Long boardId, final Long ticketId, final String userId
+    ) {
+        validateUserAccessToBoard(boardId, userId);
 
         return ticketRepository.findTicketDetailsById(boardId, ticketId)
-            .orElseThrow(() -> new EntityNotFoundException("Ticket not found"));
+            .orElseThrow(() -> new UserNotFoundException("Ticket not found"));
     }
 
     public TicketResponseDto updateTicket(
-        Long boardId, Long ticketId, TicketCreateRequestDto requestDto, String userId
+        final Long boardId,
+        final Long ticketId,
+        final TicketCreateRequestDto requestDto,
+        final String userId
     ) {
-        validateUserAccess(boardId, userId);
+        validateUserAccessToBoard(boardId, userId);
 
         Ticket updatedTicket = ticketRepository.update(boardId, ticketId, requestDto);
 
         return TicketMapper.toTicketResponseDto(updatedTicket);
     }
 
-    public TicketResponseDto updateStatus(
-        Long boardId, Long ticketId, Long statusId, String userId
+    public TicketResponseDto updateStatusAndOrder(
+        final Long boardId,
+        final Long fromStatusId,
+        final Long currentTicketId,
+        final TicketStatusUpdateRequestDto requestDto,
+        final String userId
     ) {
-        validateUserAccess(boardId, userId);
-        Status status = statusRepository.findStatusOrElseThrow(statusId);
+        validateUserAccessToBoard(boardId, userId);
+        Status validatedStatus = statusRepository.findStatusOrElseThrow(requestDto.getToStatusId());
+        Double calculatedPosition = calculatePosition(fromStatusId, currentTicketId, requestDto);
 
-        Ticket updatedTicket = ticketRepository.updateStatus(boardId, ticketId, status);
+        Ticket updatedTicket = ticketRepository.updateStatus(boardId, currentTicketId, validatedStatus, calculatedPosition);
 
         return TicketMapper.toTicketResponseDto(updatedTicket);
     }
 
-    public void deleteTicket(Long boardId, Long ticketId, String userId) {
-        validateUserAccess(boardId, userId);
+    public TicketResponseDto addAssignees(
+        final Long boardId,
+        final Long ticketId,
+        final List<String> assigneeEmails,
+        final String userId
+    ) {
+        validateUserAccessToBoard(boardId, userId);
+
+        List<Assignee> assignees = ticketRepository.findUsersInBoardByEmails(boardId, assigneeEmails)
+            .stream()
+            .map(Assignee::new)
+            .toList();
+
+        Ticket updatedTicket = ticketRepository.addAssignees(boardId, ticketId, assignees);
+
+        return TicketMapper.toTicketResponseDto(updatedTicket);
+    }
+
+    public void deleteTicket(
+        final Long boardId, final Long ticketId, final String userId
+    ) {
+        validateUserAccessToBoard(boardId, userId);
 
         ticketRepository.deleteById(boardId, ticketId);
     }
 
-    private UserBoard validateUserAccess(Long boardId, String userId) {
+    public TicketResponseDto deleteAssignees(
+        final Long boardId,
+        final Long ticketId,
+        final List<String> assigneeEmails,
+        final String userId
+    ) {
+        validateUserAccessToBoard(boardId, userId);
+
+        List<Assignee> assignees = ticketRepository.findAssigneesInTicketByEmails(boardId, ticketId, assigneeEmails);
+        if (assigneeEmails.size() != assignees.size()) {
+            throw new UserNotFoundException("Assignee not found");
+        }
+
+        Ticket updatedTicket = ticketRepository.deleteAssignees(boardId, ticketId, assignees);
+
+        return TicketMapper.toTicketResponseDto(updatedTicket);
+    }
+
+    private UserBoard validateUserAccessToBoard(final Long boardId, final String userId) {
         return ticketRepository.validateUserAccess(boardId, userId)
-            .orElseThrow(() -> new IllegalArgumentException("User not found"));
+            .orElseThrow(() -> new UserPermissionException("User not allowed to access this board"));
+    }
+
+    private Double calculatePosition(
+        final Long fromStatusId,
+        final Long currentTicketId,
+        final TicketStatusUpdateRequestDto requestDto
+    ) {
+        final Long toStatusId = requestDto.getToStatusId();
+        final Long previousTicketId = requestDto.getPreviousTicketId();
+
+        // ! issue: if moving to same position, it should not change the position
+
+        // to first
+        if (previousTicketId == null) {
+            Double minPosition = ticketRepository.findMinPositionByStatusId(toStatusId);
+
+            return (minPosition == null) ? POSITION_INCREMENT : Double.valueOf(minPosition / 2);
+        }
+
+        List<Ticket> positions = ticketRepository.findPreviousAndNextTicket(toStatusId, previousTicketId);
+        int size = positions.size();
+
+        // to last
+        if (size == 1) {
+            return positions.get(0).getPosition() + POSITION_INCREMENT;
+        }
+
+        // to others
+        if (size == 2) {
+            return Objects.equals(positions.get(1).getTicketId(), currentTicketId)
+                ? positions.get(1).getPosition()
+                : (positions.get(0).getPosition() + positions.get(1).getPosition()) / 2;
+        }
+        return POSITION_INCREMENT;
     }
 
 }

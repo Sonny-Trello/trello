@@ -39,6 +39,7 @@ public class TicketMapper {
             .color(ticket.getColor())
             .description(ticket.getDescription())
             .deadline(ticket.getDeadline())
+            .position(ticket.getPosition())
             .build();
     }
 
