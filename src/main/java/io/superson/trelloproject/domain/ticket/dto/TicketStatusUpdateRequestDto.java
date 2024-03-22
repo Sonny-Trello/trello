@@ -1,11 +1,11 @@
 package io.superson.trelloproject.domain.ticket.dto;
 
 import jakarta.validation.constraints.Positive;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
+@AllArgsConstructor
 public class TicketStatusUpdateRequestDto {
 
     @Positive

@@ -87,7 +87,7 @@ public class TicketController {
         final @PathVariable @Positive Long boardId,
         final @PathVariable @Positive Long ticketId,
         final @PathVariable @Positive Long fromStatusId,
-        final @Validated TicketStatusUpdateRequestDto requestDto,
+        final @RequestBody @Validated TicketStatusUpdateRequestDto requestDto,
         final @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
         TicketResponseDto responseDto = ticketService.updateStatusAndOrder(
