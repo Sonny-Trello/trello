@@ -35,7 +35,7 @@ public class StatusQueryRepositoryImpl implements StatusQueryRepository {
 
 
     @Override
-    public Optional<Status> findPreviousStatus(Long boardId, float previousPositionNumber) {
+    public Optional<Status> findPreviousStatus(Long boardId, Float previousPositionNumber) {
         return Optional.ofNullable(jpaQueryFactory.select(status)
                 .from(status)
                 .where(status.board.boardId.eq(boardId))
@@ -45,7 +45,7 @@ public class StatusQueryRepositoryImpl implements StatusQueryRepository {
     }
 
     @Override
-    public Optional<Status> findFollowingStatus(Long boardId, float previousPositionNumber) {
+    public Optional<Status> findFollowingStatus(Long boardId, Float previousPositionNumber) {
         return Optional.ofNullable(jpaQueryFactory.select(status)
                 .from(status)
                 .where(status.board.boardId.eq(boardId))
@@ -55,7 +55,7 @@ public class StatusQueryRepositoryImpl implements StatusQueryRepository {
     }
 
     @Override
-    public float getPreviousStatusNumberByStatusId(Long boardId, float previousPositionNumber) {
+    public float getPreviousStatusNumberByStatusId(Long boardId, Float previousPositionNumber) {
         return jpaQueryFactory.select(status.statusNumber)
                 .from(status)
                 .where(status.board.boardId.eq(boardId))
@@ -65,7 +65,7 @@ public class StatusQueryRepositoryImpl implements StatusQueryRepository {
     }
 
     @Override
-    public float getNextStatusNumberByStatusId(Long boardId, float previousPositionNumber) {
+    public float getNextStatusNumberByStatusId(Long boardId, Float previousPositionNumber) {
         return jpaQueryFactory.select(status.statusNumber)
                 .from(status)
                 .where(status.board.boardId.eq(boardId))
@@ -75,7 +75,7 @@ public class StatusQueryRepositoryImpl implements StatusQueryRepository {
     }
 
     @Override
-    public float findFirstPositionStatusNumber(Long boardId) {
+    public Float findFirstPositionStatusNumber(Long boardId) {
         return jpaQueryFactory.select(status.statusNumber)
                 .from(status)
                 .where(status.board.boardId.eq(boardId))

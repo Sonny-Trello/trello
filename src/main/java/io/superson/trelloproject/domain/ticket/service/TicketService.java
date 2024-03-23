@@ -12,13 +12,15 @@ import io.superson.trelloproject.domain.ticket.entity.Ticket;
 import io.superson.trelloproject.domain.ticket.mapper.TicketMapper;
 import io.superson.trelloproject.domain.ticket.repository.TicketRepository;
 import io.superson.trelloproject.domain.user.repository.command.UserRepository;
+import io.superson.trelloproject.global.aop.BlueLock;
 import io.superson.trelloproject.global.exception.UserNotFoundException;
 import io.superson.trelloproject.global.exception.UserPermissionException;
-import java.util.List;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 @Service

@@ -3,6 +3,7 @@ package io.superson.trelloproject.domain.status.controller;
 import io.superson.trelloproject.domain.common.dto.ResponseDto;
 import io.superson.trelloproject.domain.status.dto.CreateStatusResponseDto;
 import io.superson.trelloproject.domain.status.dto.StatusRequestDto;
+import io.superson.trelloproject.domain.status.dto.UpdateStatusNumberResponseDto;
 import io.superson.trelloproject.domain.status.dto.UpdateStatusResponseDto;
 import io.superson.trelloproject.domain.status.service.StatusService;
 import io.superson.trelloproject.global.impl.UserDetailsImpl;
@@ -26,15 +27,15 @@ public class StatusController {
 
     @PostMapping
     public ResponseEntity<ResponseDto<CreateStatusResponseDto>> createStatus(
-        @AuthenticationPrincipal UserDetailsImpl userDetails,
-        @PathVariable Long boardId,
-        @RequestBody @Validated StatusRequestDto statusRequestDto
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable Long boardId,
+            @RequestBody @Validated StatusRequestDto statusRequestDto
     ) {
         CreateStatusResponseDto statusResponseDto = statusService.createStatus(userDetails.getUser(), boardId, statusRequestDto);
         return ResponseEntity.created(createUri(statusResponseDto.getStatusId()))
-            .body(ResponseDto.<CreateStatusResponseDto>builder()
-                .data(statusResponseDto)
-                .build());
+                .body(ResponseDto.<CreateStatusResponseDto>builder()
+                        .data(statusResponseDto)
+                        .build());
     }
 
     @PutMapping("/{statusId}")
@@ -51,15 +52,16 @@ public class StatusController {
     }
 
     @PatchMapping("/{statusId}/movement")
-    public ResponseEntity<ResponseDto<Void>> updateStatusNumber(
+    public ResponseEntity<ResponseDto<UpdateStatusNumberResponseDto>> updateStatusNumber(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long boardId,
             @PathVariable Long statusId,
-            @RequestParam Float frontPositionNumber
+            @RequestParam(required = false) Float frontPositionNumber
     ) {
-        statusService.updateStatusNumber(userDetails.getUser(), boardId, statusId, frontPositionNumber);
+        UpdateStatusNumberResponseDto updateStatusNumberResponseDto = statusService.updateStatusNumber(userDetails.getUser(), boardId, statusId, frontPositionNumber);
         return ResponseEntity.created(createUri(statusId))
-                .body(ResponseDto.<Void>builder().build());
+                .body(ResponseDto.<UpdateStatusNumberResponseDto>builder()
+                        .data(updateStatusNumberResponseDto).build());
     }
 
     @DeleteMapping("/{statusId}")
@@ -75,8 +77,8 @@ public class StatusController {
 
     private URI createUri(Long statusId) {
         return ServletUriComponentsBuilder.fromCurrentRequest()
-            .path("/{id}")
-            .buildAndExpand(statusId)
-            .toUri();
+                .path("/{id}")
+                .buildAndExpand(statusId)
+                .toUri();
     }
 }

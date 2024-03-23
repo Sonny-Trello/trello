@@ -12,13 +12,13 @@ public interface StatusQueryRepository {
 
     Long getStatusCount(Long boardId);
 
-    Optional<Status> findPreviousStatus(Long boardId, float previousPositionNumber);
+    Optional<Status> findPreviousStatus(Long boardId, Float previousPositionNumber);
 
-    Optional<Status> findFollowingStatus(Long boardId, float previousPositionNumber);
+    Optional<Status> findFollowingStatus(Long boardId, Float previousPositionNumber);
 
-    float getPreviousStatusNumberByStatusId(Long boardId, float previousPositionNumber);
+    float getPreviousStatusNumberByStatusId(Long boardId, Float previousPositionNumber);
 
-    float getNextStatusNumberByStatusId(Long boardId, float previousPositionNumber);
+    float getNextStatusNumberByStatusId(Long boardId, Float previousPositionNumber);
 
-    float findFirstPositionStatusNumber(Long boardId);
+    Float findFirstPositionStatusNumber(Long boardId);
 }

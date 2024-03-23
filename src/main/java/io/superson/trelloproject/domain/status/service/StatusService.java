@@ -5,6 +5,7 @@ import io.superson.trelloproject.domain.board.repository.command.board.BoardRepo
 import io.superson.trelloproject.domain.board.repository.query.BoardQueryRepository;
 import io.superson.trelloproject.domain.status.dto.CreateStatusResponseDto;
 import io.superson.trelloproject.domain.status.dto.StatusRequestDto;
+import io.superson.trelloproject.domain.status.dto.UpdateStatusNumberResponseDto;
 import io.superson.trelloproject.domain.status.dto.UpdateStatusResponseDto;
 import io.superson.trelloproject.domain.status.entity.Status;
 import io.superson.trelloproject.domain.status.repository.command.StatusRepository;
@@ -61,30 +62,37 @@ public class StatusService {
         statusRepository.deleteById(statusId);
     }
 
-    public void updateStatusNumber(User user, Long boardId, Long statusId, Float previousPositionNumber) {
+    public UpdateStatusNumberResponseDto updateStatusNumber(User user, Long boardId, Long statusId, Float previousPositionNumber) {
         Status status = statusRepository.findStatusOrElseThrow(statusId); // 이동할 현재 status
+
+        // previousPositionNumber null (맨 앞 이동)
+        if (previousPositionNumber == null) {
+            status.updateStatusPosition(toFirstPositionStatusNumberBuilder(boardId));
+            return new UpdateStatusNumberResponseDto(statusId, status.getStatusNumber());
+        }
+
         Optional<Status> newPositionPreviousStatus = statusQueryRepository.findPreviousStatus(boardId, previousPositionNumber);
         Optional<Status> newPositionFollowingStatus = statusQueryRepository.findFollowingStatus(boardId, previousPositionNumber);
 
         validateBoardId(status, boardId);
         validateUserIsBoardMember(user, boardId);
 
-        // 이동할 위치가 맨 앞 : 파라미터가 null로 들어올 수 없기 때문에 후에 프론트 처리 예정
+        // 이동할 위치가 맨 앞 : 카드 이동 중 newPositionPreviousStatus 삭제 등..
         if (newPositionPreviousStatus.isEmpty()) {
-            status = Status.builder().statusNumber(toFirstPositionStatusNumberBuilder(boardId)).build();
-            return;
+            status.updateStatusPosition(toFirstPositionStatusNumberBuilder(boardId));
+            return new UpdateStatusNumberResponseDto(statusId, status.getStatusNumber());
         }
 
         // 위치 이동 없음
         if (previousPositionNumber == statusQueryRepository.getPreviousStatusNumberByStatusId(boardId, previousPositionNumber)) {
             status.updateStatusPosition(status.getStatusNumber());
-            return;
+            return new UpdateStatusNumberResponseDto(statusId, status.getStatusNumber());
         }
 
         // 이동할 위차가 맨 뒤
         if (newPositionFollowingStatus.isEmpty()) {
-            status = Status.builder().statusNumber(toStatusNumberBuilder(boardId)).build();
-            return;
+            status.updateStatusPosition(toStatusNumberBuilder(boardId));
+            return new UpdateStatusNumberResponseDto(statusId, status.getStatusNumber());
         }
 
         // 이동할 위치 앞 뒤 상태 존재
@@ -92,6 +100,7 @@ public class StatusService {
         float newPositionNumber = (previousPositionNumber + nextPositionNumber) / 2;
 
         status.updateStatusPosition(newPositionNumber);
+        return new UpdateStatusNumberResponseDto(statusId, status.getStatusNumber());
     }
 
     private void validateUserIsBoardMember(User user, Long boardId) {
@@ -112,7 +121,7 @@ public class StatusService {
         return (statusQueryRepository.getStatusCount(boardId) + 1) * 65536;
     }
 
-    private float toFirstPositionStatusNumberBuilder(Long boardId) {
+    private Float toFirstPositionStatusNumberBuilder(Long boardId) {
         return statusQueryRepository.findFirstPositionStatusNumber(boardId) / 2;
     }
 }
