@@ -44,7 +44,8 @@ public class TicketService {
             .stream()
             .map(Assignee::new)
             .toList();
-        Ticket savedTicket = ticketRepository.save(TicketMapper.toEntity(requestDto), userBoard.getBoard(), status, assignees);
+        Ticket savedTicket = ticketRepository.save(TicketMapper.toEntity(requestDto),
+            userBoard.getBoard(), status, assignees);
 
         return TicketMapper.toTicketResponseDto(savedTicket);
     }
@@ -59,6 +60,7 @@ public class TicketService {
             .orElseThrow(() -> new UserNotFoundException("Ticket not found"));
     }
 
+    @BlueLock
     public TicketResponseDto updateTicket(
         final Long boardId,
         final Long ticketId,
@@ -72,6 +74,7 @@ public class TicketService {
         return TicketMapper.toTicketResponseDto(updatedTicket);
     }
 
+    @BlueLock
     public TicketResponseDto updateStatusAndOrder(
         final Long boardId,
         final Long fromStatusId,
@@ -83,7 +86,8 @@ public class TicketService {
         Status validatedStatus = statusRepository.findStatusOrElseThrow(requestDto.getToStatusId());
         Double calculatedPosition = calculatePosition(fromStatusId, currentTicketId, requestDto);
 
-        Ticket updatedTicket = ticketRepository.updateStatus(boardId, currentTicketId, validatedStatus, calculatedPosition);
+        Ticket updatedTicket = ticketRepository.updateStatus(boardId, currentTicketId,
+            validatedStatus, calculatedPosition);
 
         return TicketMapper.toTicketResponseDto(updatedTicket);
     }
@@ -96,7 +100,8 @@ public class TicketService {
     ) {
         validateUserAccessToBoard(boardId, userId);
 
-        List<Assignee> assignees = ticketRepository.findUsersInBoardByEmails(boardId, assigneeEmails)
+        List<Assignee> assignees = ticketRepository.findUsersInBoardByEmails(boardId,
+                assigneeEmails)
             .stream()
             .map(Assignee::new)
             .toList();
@@ -122,7 +127,8 @@ public class TicketService {
     ) {
         validateUserAccessToBoard(boardId, userId);
 
-        List<Assignee> assignees = ticketRepository.findAssigneesInTicketByEmails(boardId, ticketId, assigneeEmails);
+        List<Assignee> assignees = ticketRepository.findAssigneesInTicketByEmails(boardId, ticketId,
+            assigneeEmails);
         if (assigneeEmails.size() != assignees.size()) {
             throw new UserNotFoundException("Assignee not found");
         }
@@ -134,7 +140,8 @@ public class TicketService {
 
     private UserBoard validateUserAccessToBoard(final Long boardId, final String userId) {
         return ticketRepository.validateUserAccess(boardId, userId)
-            .orElseThrow(() -> new UserPermissionException("User not allowed to access this board"));
+            .orElseThrow(
+                () -> new UserPermissionException("User not allowed to access this board"));
     }
 
     private Double calculatePosition(
@@ -154,7 +161,8 @@ public class TicketService {
             return (minPosition == null) ? POSITION_INCREMENT : Double.valueOf(minPosition / 2);
         }
 
-        List<Ticket> positions = ticketRepository.findPreviousAndNextTicket(toStatusId, previousTicketId);
+        List<Ticket> positions = ticketRepository.findPreviousAndNextTicket(toStatusId,
+            previousTicketId);
         int size = positions.size();
 
         // to last
