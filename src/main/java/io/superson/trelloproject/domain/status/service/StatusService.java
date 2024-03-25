@@ -36,7 +36,7 @@ public class StatusService {
 
         Board board = boardRepository.findById(boardId);
         Status status = Status.builder().name(createStatusRequestDto.getName())
-                .statusNumber(toStatusNumberBuilder(boardId))
+                .statusNumber((statusQueryRepository.getStatusCountByBoardId(boardId) + 1) * 65536)
                 .board(board).build();
 
         validateBoardId(status, boardId);
@@ -67,7 +67,7 @@ public class StatusService {
 
         // previousPositionNumber null (맨 앞 이동)
         if (previousPositionNumber == null) {
-            status.updateStatusPosition(toFirstPositionStatusNumberBuilder(boardId));
+            status.updateStatusPosition(toStatusNumberBuilder(boardId, true));
             return new UpdateStatusNumberResponseDto(statusId, status.getStatusNumber());
         }
 
@@ -79,24 +79,24 @@ public class StatusService {
 
         // 이동할 위치가 맨 앞 : 카드 이동 중 newPositionPreviousStatus 삭제 등..
         if (newPositionPreviousStatus.isEmpty()) {
-            status.updateStatusPosition(toFirstPositionStatusNumberBuilder(boardId));
+            status.updateStatusPosition(toStatusNumberBuilder(boardId, true));
             return new UpdateStatusNumberResponseDto(statusId, status.getStatusNumber());
         }
 
         // 위치 이동 없음
-        if (previousPositionNumber == statusQueryRepository.getPreviousStatusNumberByStatusId(boardId, previousPositionNumber)) {
+        if (previousPositionNumber == newPositionPreviousStatus.get().getStatusNumber()) {
             status.updateStatusPosition(status.getStatusNumber());
             return new UpdateStatusNumberResponseDto(statusId, status.getStatusNumber());
         }
 
         // 이동할 위차가 맨 뒤
         if (newPositionFollowingStatus.isEmpty()) {
-            status.updateStatusPosition(toStatusNumberBuilder(boardId));
+            status.updateStatusPosition(toStatusNumberBuilder(boardId, false));
             return new UpdateStatusNumberResponseDto(statusId, status.getStatusNumber());
         }
 
         // 이동할 위치 앞 뒤 상태 존재
-        float nextPositionNumber = statusQueryRepository.getNextStatusNumberByStatusId(boardId, previousPositionNumber);
+        float nextPositionNumber = newPositionFollowingStatus.get().getStatusNumber();
         float newPositionNumber = (previousPositionNumber + nextPositionNumber) / 2;
 
         status.updateStatusPosition(newPositionNumber);
@@ -117,11 +117,8 @@ public class StatusService {
         }
     }
 
-    private float toStatusNumberBuilder(Long boardId) {
-        return (statusQueryRepository.getStatusCount(boardId) + 1) * 65536;
-    }
-
-    private Float toFirstPositionStatusNumberBuilder(Long boardId) {
-        return statusQueryRepository.findFirstPositionStatusNumber(boardId) / 2;
+    private float toStatusNumberBuilder(Long boardId, boolean isAsc) {
+        return isAsc ? statusQueryRepository.findFirstOrFinalPositionStatusNumber(boardId, true).getCurrentStatusNumber() / 2
+                : statusQueryRepository.findFirstOrFinalPositionStatusNumber(boardId, false).getCurrentStatusNumber() + 65536;
     }
 }
